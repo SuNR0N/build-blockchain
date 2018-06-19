@@ -1,0 +1,33 @@
+{
+  "name": "build-blockchain",
+  "version": "1.0.0",
+  "description": "Build a Blockchain and a Cryptocurrency from Scratch",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^23.1.1",
+    "jest": "^23.1.0",
+    "ts-jest": "^22.4.6",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2"
+  },
+  "scripts": {
+    "test": "jest --watchAll",
+    "test:coverage": "jest --coverage"
+  },
+  "author": "annus.norbert@gmail.com",
+  "license": "MIT",
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  }
+}
