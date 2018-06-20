@@ -1,3 +1,3 @@
 export * from './BlockchainModel';
 export * from './BlockModel';
-export * from './PeerToPeerServerModel';
+export * from './P2PServerModel';

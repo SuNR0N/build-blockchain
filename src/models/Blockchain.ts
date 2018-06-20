@@ -26,7 +26,16 @@ export class Blockchain<T> implements BlockchainModel<T> {
   }
 
   public isValidChain(chain: Array<Block<T>>): boolean {
-    if (JSON.stringify(chain[0]) !== JSON.stringify(this.getGenesisBlock())) {
+    const {
+      timestamp: otherTimestamp,
+      ...otherGenesisBlock
+    } = chain[0];
+    const {
+      timestamp,
+      ...genesisBlock
+    } = this.getGenesisBlock();
+
+    if (JSON.stringify(otherGenesisBlock) !== JSON.stringify(genesisBlock)) {
       return false;
     }
 
