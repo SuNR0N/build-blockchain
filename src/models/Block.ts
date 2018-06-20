@@ -29,7 +29,7 @@ export class Block<T> implements BlockModel<T> {
     );
   }
 
-  public static hash<T>(timestamp: number, lastHash: string, data: T, nonce: number, difficulty: number) {
+  public static hash<T>(timestamp: number, lastHash: string, data: T, nonce: number, difficulty: number): string {
     return SHA256(`${timestamp}${lastHash}${data}${nonce}${difficulty}`).toString();
   }
 
@@ -67,7 +67,7 @@ export class Block<T> implements BlockModel<T> {
     public difficulty: number = DIFFICULTY,
   ) { }
 
-  public toString() {
+  public toString(): string {
     return `Block -
       ${'Difficulty'.padEnd(10)}: ${this.difficulty}
       ${'Hash'.padEnd(10)}: ${this.hash}

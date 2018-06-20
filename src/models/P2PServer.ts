@@ -28,10 +28,10 @@ export class P2PServer implements P2PServerModel {
   }
 
   public synchronizeChains(): void {
-    this.sockets.forEach(this.sendChain);
+    this.sockets.forEach((socket) => this.sendChain(socket));
   }
 
-  private sendChain(socket: WebSocket) {
+  private sendChain(socket: WebSocket): void {
     socket.send(JSON.stringify(this.blockchain.chain));
   }
 

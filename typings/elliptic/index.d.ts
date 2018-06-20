@@ -12,4 +12,5 @@ declare module 'elliptic' {
   }
 
   const ec: ECConstructor;
+
 }
