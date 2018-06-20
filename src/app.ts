@@ -1,8 +1,10 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 
-import { Blockchain } from './models/Blockchain';
-import { P2PServer } from './models/P2PServer';
+import {
+  Blockchain,
+  P2PServer,
+} from './models';
 
 const PORT = process.env.PORT || 3001;
 const app = express();

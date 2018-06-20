@@ -2,22 +2,22 @@ import { Block } from './Block';
 import { Blockchain } from './Blockchain';
 
 describe('Blockchain', () => {
-  beforeAll(() => {
-    jest.spyOn(Date, 'now').mockReturnValue(12345);
-  });
-
-  afterAll(() => {
-    jest.restoreAllMocks();
-  });
-
   describe('constructor', () => {
+    beforeAll(() => {
+      jest.spyOn(Date, 'now').mockReturnValue(12345);
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
     it('should create a blockchain with a single genesis block', () => {
       const blockchain = new Blockchain<string>();
-      const gesisBlock = Block.genesis<string>();
+      const genesisBlock = Block.genesis<string>();
       const firstBlock = blockchain.chain[0];
 
       expect(blockchain.chain).toHaveLength(1);
-      expect(firstBlock).toEqual(gesisBlock);
+      expect(firstBlock).toEqual(genesisBlock);
     });
   });
 
@@ -32,6 +32,14 @@ describe('Blockchain', () => {
   });
 
   describe('getGenesisBlock', () => {
+    beforeAll(() => {
+      jest.spyOn(Date, 'now').mockReturnValue(12345);
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
     it('should return the genesis block of the blockchain', () => {
       const blockchain = new Blockchain<string>();
       const genesisBlock = Block.genesis<string>();
@@ -41,6 +49,14 @@ describe('Blockchain', () => {
   });
 
   describe('getLastBlock', () => {
+    beforeAll(() => {
+      jest.spyOn(Date, 'now').mockReturnValue(12345);
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
+    });
+
     it('should return the genesis block for a new blockchain', () => {
       const blockchain = new Blockchain<string>();
       const genesisBlock = Block.genesis<string>();
@@ -66,7 +82,7 @@ describe('Blockchain', () => {
 
     it('should return false if the genesis blocks do not match', () => {
       const genesisBlock = Block.genesis<string>();
-      genesisBlock.timestamp = 54321;
+      genesisBlock.nonce = 1;
       const chain = [genesisBlock];
 
       expect(blockchain.isValidChain(chain)).toBe(false);
