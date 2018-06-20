@@ -14,7 +14,7 @@ A cryptocurrency is a _digital medium of exchange_ which leverages the blockchai
 
 ### Wallet
 
-Object that stores the _private_ and _public key pair_ of an individual and which is used to _sign_ the transactions.
+Object that stores the _balance_ of an individual alongside with a _private_ and _public key pair_. The _private key_ is used to generate digital signatures, while the _public key_ is used to verify signatures and it also serves as the address of the wallet.
 
 ### Mining
 
@@ -33,6 +33,16 @@ Hardcoded block which serves as the origin of the blockchain.
 A system that requires miners to do computational work to add blocks to the chain and which makes it expensive to generate corrupt chains.
 
 Based on a predefined _difficulty_ level, which sets the _rate of mining_, the system generates hashes until one with the matching criteria is found. A _nonce_ value is incremented within the block which facilitates the generation of a new hash.
+
+### Transaction
+
+An object which captures the information behind the exchange of currency between two individuals. Its _input fields_ (timestamp, balance, signature, sender's public key) provides details about the original sender while its _output fields_ (amount, address) describes the balance change of each individual.
+
+### Digital Signature
+
+The digital signature is the hash value of the combination of the transactional data and the sender's private key.
+
+The public key of the sender can be used to verify the signature.
 
 ## Install
 
