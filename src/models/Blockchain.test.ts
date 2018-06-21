@@ -1,5 +1,7 @@
-import { Block } from './Block';
-import { Blockchain } from './Blockchain';
+import {
+  Block,
+  Blockchain,
+} from './';
 
 describe('Blockchain', () => {
   describe('constructor', () => {

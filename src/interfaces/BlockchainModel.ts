@@ -1,11 +1,11 @@
-import { Block } from '../models/Block';
+import { BlockModel } from './BlockModel';
 
 export interface BlockchainModel<T> {
-  chain: Array<Block<T>>;
+  chain: Array<BlockModel<T>>;
 
-  addBlock(data: T): Block<T>;
-  getGenesisBlock(): Block<T>;
-  getLastBlock(): Block<T>;
-  isValidChain(chain: Array<Block<T>>): boolean;
-  replaceChain(chain: Array<Block<T>>): void;
+  addBlock(data: T): BlockModel<T>;
+  getGenesisBlock(): BlockModel<T>;
+  getLastBlock(): BlockModel<T>;
+  isValidChain(chain: Array<BlockModel<T>>): boolean;
+  replaceChain(chain: Array<BlockModel<T>>): void;
 }

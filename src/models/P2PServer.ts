@@ -1,7 +1,7 @@
 import WebSocket from 'ws';
 
-import { P2PServerModel } from '../interfaces';
-import { Blockchain } from './BlockChain';
+import { P2PServerModel } from '../interfaces/P2PServerModel';
+import { Blockchain } from './Blockchain';
 
 const WS_PORT = process.env.WS_PORT ? parseInt(process.env.WS_PORT, 10) : 5001;
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];

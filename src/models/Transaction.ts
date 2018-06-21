@@ -40,13 +40,42 @@ export class Transaction implements TransactionModel {
     };
   }
 
+  public static verifyTransaction(transaction: Transaction): boolean {
+    return ChainUtils.verifySignature(
+      transaction.input!.address,
+      transaction.input!.signature,
+      ChainUtils.hash(transaction.outputs),
+    );
+  }
+
   public id: string;
   public input: TransactionInputModel | null;
   public outputs: TransactionOutputModel[];
 
-  constructor() {
+  private constructor() {
     this.id = ChainUtils.id();
     this.input = null;
     this.outputs = [];
+  }
+
+  public update(senderWallet: Wallet, recipient: string, amount: number): Transaction | undefined {
+    const senderOutput = this.outputs.find((output) => output.address === senderWallet.publicKey)!;
+
+    if (amount > senderOutput.amount) {
+      // tslint:disable-next-line:no-console
+      console.log(`Transferable amount (${amount}) exceeds sender's balance.`);
+      return;
+    }
+
+    senderOutput.amount = senderOutput.amount - amount;
+    const spent: TransactionOutputModel = {
+      address: recipient,
+      amount,
+    };
+    this.outputs.push(spent);
+
+    Transaction.signTransaction(this, senderWallet);
+
+    return this;
   }
 }

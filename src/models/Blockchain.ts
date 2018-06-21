@@ -1,4 +1,4 @@
-import { BlockchainModel } from '../interfaces';
+import { BlockchainModel } from '../interfaces/BlockchainModel';
 import { Block } from './Block';
 
 export class Blockchain<T> implements BlockchainModel<T> {

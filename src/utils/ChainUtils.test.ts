@@ -1,5 +1,5 @@
 import cryptoJS from 'crypto-js';
-import elliptic from 'elliptic';
+import elliptic, { Signature } from 'elliptic';
 import uuid from 'uuid';
 
 import { ChainUtils } from './ChainUtils';
@@ -62,6 +62,36 @@ describe('ChainUtils', () => {
       const hash = ChainUtils.hash('foobar');
 
       expect(hash).toMatch(/^[a-z0-9]{64}$/);
+    });
+  });
+
+  describe('verifySignature', () => {
+    let keyFromPublicSpy: jest.Mock;
+    let verifySpy: jest.Mock;
+
+    beforeEach(() => {
+      verifySpy = jest.fn();
+      keyFromPublicSpy = jest.spyOn(EC.prototype, 'keyFromPublic')
+        .mockReturnValue({ verify: verifySpy });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should call the keyFromPublic function with the provided public key', () => {
+      const publicKey = 'foo';
+      ChainUtils.verifySignature(publicKey, {} as Signature, 'bar');
+
+      expect(keyFromPublicSpy).toHaveBeenCalledWith(publicKey, 'hex');
+    });
+
+    it('should call the verify function of the retrieved keypair with the data hash and signature', () => {
+      const signature = {} as Signature;
+      const dataHash = 'foobar';
+      ChainUtils.verifySignature('123', signature, dataHash);
+
+      expect(verifySpy).toHaveBeenCalledWith(dataHash, signature);
     });
   });
 });

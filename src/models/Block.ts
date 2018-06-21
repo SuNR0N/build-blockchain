@@ -2,7 +2,7 @@ import {
   DIFFICULTY,
   MINE_RATE,
 } from '../config';
-import { BlockModel } from '../interfaces';
+import { BlockModel } from '../interfaces/BlockModel';
 import { ChainUtils } from '../utils/ChainUtils';
 
 export class Block<T> implements BlockModel<T> {
