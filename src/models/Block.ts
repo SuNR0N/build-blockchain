@@ -1,10 +1,9 @@
-import { SHA256 } from 'crypto-js';
-
 import {
   DIFFICULTY,
   MINE_RATE,
 } from '../config';
 import { BlockModel } from '../interfaces';
+import { ChainUtils } from '../utils/ChainUtils';
 
 export class Block<T> implements BlockModel<T> {
   public static blockHash<T>(block: Block<T>): string {
@@ -30,7 +29,7 @@ export class Block<T> implements BlockModel<T> {
   }
 
   public static hash<T>(timestamp: number, lastHash: string, data: T, nonce: number, difficulty: number): string {
-    return SHA256(`${timestamp}${lastHash}${data}${nonce}${difficulty}`).toString();
+    return ChainUtils.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
   }
 
   public static mineBlock<T>(lastBlock: Block<T>, data: T): Block<T> {

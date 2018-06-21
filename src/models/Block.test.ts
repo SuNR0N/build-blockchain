@@ -1,21 +1,11 @@
-import cryptoJS from 'crypto-js';
-
 import { DIFFICULTY } from '../config';
+import { ChainUtils } from '../utils/ChainUtils';
 import { Block } from './Block';
 
 describe('Block', () => {
   describe('blockHash', () => {
-    let hashSpy: jest.SpyInstance;
-
-    beforeAll(() => {
-      hashSpy = jest.spyOn(Block, 'hash');
-    });
-
-    afterAll(() => {
-      hashSpy.mockRestore();
-    });
-
     it('should call the hash function with the properties of the provided block', () => {
+      const hashSpy = jest.spyOn(Block, 'hash');
       const block = new Block<string>();
       const {
         data,
@@ -59,20 +49,12 @@ describe('Block', () => {
   });
 
   describe('hash', () => {
-    let SHA256Spy: jest.SpyInstance;
+    it('should call the hash function with the composite key of the block', () => {
+      const hashSpy = jest.spyOn(ChainUtils, 'hash');
 
-    beforeAll(() => {
-      SHA256Spy = jest.spyOn(cryptoJS, 'SHA256');
-    });
-
-    afterAll(() => {
-      SHA256Spy.mockRestore();
-    });
-
-    it('should call the SHA256 function with the composite key of the block', () => {
       Block.hash<string>(123, 'a1b', 'foo', 1, 3);
 
-      expect(SHA256Spy).toHaveBeenCalledWith('123a1bfoo13');
+      expect(hashSpy).toHaveBeenCalledWith('123a1bfoo13');
     });
   });
 

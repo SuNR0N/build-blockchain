@@ -1,4 +1,7 @@
-import { KeyPair } from 'elliptic';
+import {
+  KeyPair,
+  Signature,
+} from 'elliptic';
 
 import { INITIAL_BALANCE } from '../config';
 import { WalletModel } from '../interfaces/WalletModel';
@@ -19,5 +22,9 @@ export class Wallet implements WalletModel {
     return `Wallet -
       ${'Balance'.padEnd(10)}: ${this.balance}
       ${'Public Key'.padEnd(10)}: ${this.publicKey}`;
+  }
+
+  public sign(dataHash: string): Signature {
+    return this.keyPair.sign(dataHash);
   }
 }

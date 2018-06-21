@@ -1,4 +1,5 @@
 import {
+  TransactionInputModel,
   TransactionModel,
   TransactionOutputModel,
 } from '../interfaces/TransactionModel';
@@ -25,12 +26,22 @@ export class Transaction implements TransactionModel {
     };
 
     transaction.outputs.push(remaining, spent);
+    Transaction.signTransaction(transaction, senderWallet);
 
     return transaction;
   }
 
+  public static signTransaction(transaction: Transaction, senderWallet: Wallet): void {
+    transaction.input = {
+      address: senderWallet.publicKey,
+      amount: senderWallet.balance,
+      signature: senderWallet.sign(ChainUtils.hash(transaction.outputs)),
+      timestamp: Date.now(),
+    };
+  }
+
   public id: string;
-  public input: any;
+  public input: TransactionInputModel | null;
   public outputs: TransactionOutputModel[];
 
   constructor() {
