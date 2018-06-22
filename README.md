@@ -22,7 +22,7 @@ Temporarily _unconfirmed_ blocks of transactions can be added to the blockchain 
 
 ### Bitcoin
 
-The first decentralized cryptocurrency in 2009.
+The first decentralized cryptocurrency in _2009_ developed by _Satoshi Nakamoto_.
 
 ### Genesis Block
 
@@ -37,6 +37,10 @@ Based on a predefined _difficulty_ level, which sets the _rate of mining_, the s
 ### Transaction
 
 An object which captures the information behind the exchange of currency between two individuals. Its _input fields_ (timestamp, balance, signature, sender's public key) provides details about the original sender while its _output fields_ (amount, address) describes the balance change of each individual.
+
+### Transaction Pool
+
+An object that contains all new and therefore _unconfirmed transactions_ submitted by individuals.
 
 ### Digital Signature
 
