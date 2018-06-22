@@ -15,7 +15,7 @@ export class Miner implements IMiner {
   ) { }
 
   public mine(): void {
-    // get valid transactions
+    const validTransactions = this.transactionPool.validTransactions();
     // create a block consisting of the valid transactions
     // synchronize the chains in the peer-to-peer server
     // clear the transaction pool

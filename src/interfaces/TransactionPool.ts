@@ -5,4 +5,5 @@ export interface ITransactionPool {
 
   existingTransaction(address: string): ITransaction | undefined;
   updateOrAddTransaction(transaction: ITransaction): void;
+  validTransactions(): ITransaction[];
 }

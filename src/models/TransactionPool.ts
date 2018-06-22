@@ -2,6 +2,7 @@ import {
   ITransaction,
   ITransactionPool,
 } from '../interfaces';
+import { Transaction } from './Transaction';
 
 export class TransactionPool implements ITransactionPool {
   public transactions: ITransaction[];
@@ -23,5 +24,28 @@ export class TransactionPool implements ITransactionPool {
     } else {
       this.transactions[transactionIndex] = transaction;
     }
+  }
+
+  public validTransactions(): ITransaction[] {
+    return this.transactions.filter((transaction) => {
+      const outputTotal = transaction.outputs.reduce((previous, current) => {
+        previous += current.amount;
+        return previous;
+      }, 0);
+
+      if (transaction.input!.amount !== outputTotal) {
+        // tslint:disable-next-line:no-console
+        console.log(`Invalid transaction (${transaction.id}) from ${transaction.input!.address}.`);
+        return false;
+      }
+
+      if (!Transaction.verifyTransaction(transaction)) {
+        // tslint:disable-next-line:no-console
+        console.log(`Invalid signature for transaction (${transaction.id}) from ${transaction.input!.address}.`);
+        return false;
+      }
+
+      return true;
+    });
   }
 }

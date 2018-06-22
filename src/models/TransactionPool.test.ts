@@ -63,4 +63,70 @@ describe('TransactionPool', () => {
       expect(pooledTransaction).not.toEqual(oldTransaction);
     });
   });
+
+  describe('validTransactions', () => {
+    let transactionPool: TransactionPool;
+    let transaction: Transaction;
+
+    beforeEach(() => {
+      transactionPool = new TransactionPool();
+      transaction = Transaction.newTransaction(new Wallet(), 'r3c1p13n7', 123)!;
+    });
+
+    describe('given a transaction is invalid', () => {
+      beforeEach(() => {
+        transaction.outputs[0].amount = 999;
+        transactionPool.updateOrAddTransaction(transaction);
+      });
+
+      afterAll(() => {
+        jest.resetAllMocks();
+      });
+
+      it('should log a message', () => {
+        const logSpy = jest.spyOn(console, 'log');
+        transactionPool.validTransactions();
+
+        expect(logSpy).toHaveBeenCalledWith(
+          expect.stringMatching(/^Invalid transaction \([a-z0-9-]{36}\) from [a-z0-9]{130}\.$/),
+        );
+      });
+
+      it('should not be included in the results', () => {
+        expect(transactionPool.validTransactions()).toHaveLength(0);
+      });
+    });
+
+    describe('given a signature of a transaction is invalid', () => {
+      beforeEach(() => {
+        const temp = transaction.outputs[0].amount;
+        transaction.outputs[0].amount = transaction.outputs[1].amount;
+        transaction.outputs[1].amount = temp;
+        transactionPool.updateOrAddTransaction(transaction);
+      });
+
+      afterAll(() => {
+        jest.resetAllMocks();
+      });
+
+      it('should log a message', () => {
+        const logSpy = jest.spyOn(console, 'log');
+        transactionPool.validTransactions();
+
+        expect(logSpy).toHaveBeenCalledWith(
+          expect.stringMatching(/^Invalid signature for transaction \([a-z0-9-]{36}\) from [a-z0-9]{130}\.$/),
+        );
+      });
+
+      it('should not be included in the results', () => {
+        expect(transactionPool.validTransactions()).toHaveLength(0);
+      });
+    });
+
+    it('should return a valid transaction', () => {
+      transactionPool.updateOrAddTransaction(transaction);
+
+      expect(transactionPool.validTransactions()).toHaveLength(1);
+    });
+  });
 });
