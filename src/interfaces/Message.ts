@@ -1,18 +1,18 @@
-import { BlockModel } from './BlockModel';
-import { TransactionModel } from './TransactionModel';
+import { IBlock } from './Block';
+import { ITransaction } from './Transaction';
 
 export const CHAIN = 'CHAIN';
 export const TRANSACTION = 'TRANSACTION';
 
-interface MessageTypes {
+interface IMessageType {
   CHAIN: {
     type: typeof CHAIN;
-    data: Array<BlockModel<string>>;
+    data: Array<IBlock<string>>;
   };
   TRANSACTION: {
     type: typeof TRANSACTION;
-    data: TransactionModel,
+    data: ITransaction,
   };
 }
 
-export type Message = MessageTypes[keyof MessageTypes];
+export type Message = IMessageType[keyof IMessageType];

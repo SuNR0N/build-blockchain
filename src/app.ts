@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 
-import { WalletModel } from './interfaces';
+import { IWallet } from './interfaces';
 import {
   Blockchain,
   P2PServer,
@@ -33,7 +33,7 @@ app.post('/mine', (req, res) => {
 });
 
 app.get('/public-key', (req, res) => {
-  const publicKey: Partial<WalletModel> = {
+  const publicKey: Partial<IWallet> = {
     publicKey: wallet.publicKey,
   };
   res.json(publicKey);

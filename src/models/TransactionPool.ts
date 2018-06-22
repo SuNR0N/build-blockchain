@@ -1,20 +1,20 @@
 import {
-  TransactionModel,
-  TransactionPoolModel,
+  ITransaction,
+  ITransactionPool,
 } from '../interfaces';
 
-export class TransactionPool implements TransactionPoolModel {
-  public transactions: TransactionModel[];
+export class TransactionPool implements ITransactionPool {
+  public transactions: ITransaction[];
 
   constructor() {
     this.transactions = [];
   }
 
-  public existingTransaction(address: string): TransactionModel | undefined {
+  public existingTransaction(address: string): ITransaction | undefined {
     return this.transactions.find((transaction) => transaction.input!.address === address);
   }
 
-  public updateOrAddTransaction(transaction: TransactionModel): void {
+  public updateOrAddTransaction(transaction: ITransaction): void {
     const transactionIndex = this.transactions
       .findIndex((existingTransaction) => existingTransaction.id === transaction.id);
 

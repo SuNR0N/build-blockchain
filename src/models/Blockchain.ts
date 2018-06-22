@@ -1,14 +1,17 @@
-import { BlockchainModel } from '../interfaces/BlockchainModel';
+import {
+  IBlock,
+  IBlockchain,
+} from '../interfaces';
 import { Block } from './Block';
 
-export class Blockchain<T> implements BlockchainModel<T> {
-  public chain: Array<Block<T>>;
+export class Blockchain<T> implements IBlockchain<T> {
+  public chain: Array<IBlock<T>>;
 
   constructor() {
     this.chain = [Block.genesis<T>()];
   }
 
-  public addBlock(data: T): Block<T> {
+  public addBlock(data: T): IBlock<T> {
     const newBlock = Block.mineBlock<T>(this.getLastBlock(), data);
     this.chain = [
       ...this.chain,
@@ -17,15 +20,15 @@ export class Blockchain<T> implements BlockchainModel<T> {
     return newBlock;
   }
 
-  public getGenesisBlock(): Block<T> {
+  public getGenesisBlock(): IBlock<T> {
     return this.chain[0];
   }
 
-  public getLastBlock(): Block<T> {
+  public getLastBlock(): IBlock<T> {
     return this.chain[this.chain.length - 1];
   }
 
-  public isValidChain(chain: Array<Block<T>>): boolean {
+  public isValidChain(chain: Array<IBlock<T>>): boolean {
     const {
       timestamp: otherTimestamp,
       ...otherGenesisBlock
@@ -50,7 +53,7 @@ export class Blockchain<T> implements BlockchainModel<T> {
     });
   }
 
-  public replaceChain(chain: Array<Block<T>>): void {
+  public replaceChain(chain: Array<IBlock<T>>): void {
     // tslint:disable:no-console
     if (chain.length <= this.chain.length) {
       console.log('Received chain is not longer than the current chain.');

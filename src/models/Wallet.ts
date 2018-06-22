@@ -5,13 +5,13 @@ import {
 
 import { INITIAL_BALANCE } from '../config';
 import {
-  TransactionPoolModel,
-  WalletModel,
+  ITransactionPool,
+  IWallet,
 } from '../interfaces';
 import { ChainUtils } from '../utils/ChainUtils';
 import { Transaction } from './Transaction';
 
-export class Wallet implements WalletModel {
+export class Wallet implements IWallet {
   public balance: number;
   public keyPair: KeyPair;
   public publicKey: string;
@@ -22,17 +22,7 @@ export class Wallet implements WalletModel {
     this.publicKey = this.keyPair.getPublic('hex');
   }
 
-  public toString(): string {
-    return `Wallet -
-      ${'Balance'.padEnd(10)}: ${this.balance}
-      ${'Public Key'.padEnd(10)}: ${this.publicKey}`;
-  }
-
-  public sign(dataHash: string): Signature {
-    return this.keyPair.sign(dataHash);
-  }
-
-  public createTransaction(recipient: string, amount: number, transactionPool: TransactionPoolModel) {
+  public createTransaction(recipient: string, amount: number, transactionPool: ITransactionPool): void {
     if (amount > this.balance) {
       // tslint:disable-next-line:no-console
       console.log(`Transferable amount (${amount}) exceeds current balance (${this.balance}).`);
@@ -47,5 +37,15 @@ export class Wallet implements WalletModel {
       transaction = Transaction.newTransaction(this, recipient, amount)!;
       transactionPool.updateOrAddTransaction(transaction);
     }
+  }
+
+  public sign(dataHash: string): Signature {
+    return this.keyPair.sign(dataHash);
+  }
+
+  public toString(): string {
+    return `Wallet -
+      ${'Balance'.padEnd(10)}: ${this.balance}
+      ${'Public Key'.padEnd(10)}: ${this.publicKey}`;
   }
 }

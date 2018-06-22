@@ -1,13 +1,13 @@
 import {
-  TransactionInputModel,
-  TransactionModel,
-  TransactionOutputModel,
-} from '../interfaces/TransactionModel';
+  ITransaction,
+  ITransactionInput,
+  ITransactionOutput,
+  IWallet,
+} from '../interfaces';
 import { ChainUtils } from '../utils/ChainUtils';
-import { Wallet } from './Wallet';
 
-export class Transaction implements TransactionModel {
-  public static newTransaction(senderWallet: Wallet, recipient: string, amount: number): Transaction | undefined {
+export class Transaction implements ITransaction {
+  public static newTransaction(senderWallet: IWallet, recipient: string, amount: number): ITransaction | undefined {
     const transaction = new this();
 
     if (amount > senderWallet.balance) {
@@ -16,11 +16,11 @@ export class Transaction implements TransactionModel {
       return;
     }
 
-    const remaining: TransactionOutputModel = {
+    const remaining: ITransactionOutput = {
       address: senderWallet.publicKey,
       amount: senderWallet.balance - amount,
     };
-    const spent: TransactionOutputModel = {
+    const spent: ITransactionOutput = {
       address: recipient,
       amount,
     };
@@ -31,7 +31,7 @@ export class Transaction implements TransactionModel {
     return transaction;
   }
 
-  public static signTransaction(transaction: Transaction, senderWallet: Wallet): void {
+  public static signTransaction(transaction: ITransaction, senderWallet: IWallet): void {
     transaction.input = {
       address: senderWallet.publicKey,
       amount: senderWallet.balance,
@@ -40,7 +40,7 @@ export class Transaction implements TransactionModel {
     };
   }
 
-  public static verifyTransaction(transaction: Transaction): boolean {
+  public static verifyTransaction(transaction: ITransaction): boolean {
     return ChainUtils.verifySignature(
       transaction.input!.address,
       transaction.input!.signature,
@@ -49,8 +49,8 @@ export class Transaction implements TransactionModel {
   }
 
   public id: string;
-  public input: TransactionInputModel | null;
-  public outputs: TransactionOutputModel[];
+  public input: ITransactionInput | null;
+  public outputs: ITransactionOutput[];
 
   private constructor() {
     this.id = ChainUtils.id();
@@ -58,7 +58,7 @@ export class Transaction implements TransactionModel {
     this.outputs = [];
   }
 
-  public update(senderWallet: Wallet, recipient: string, amount: number): Transaction | undefined {
+  public update(senderWallet: IWallet, recipient: string, amount: number): ITransaction | undefined {
     const senderOutput = this.outputs.find((output) => output.address === senderWallet.publicKey)!;
 
     if (amount > senderOutput.amount) {
@@ -68,7 +68,7 @@ export class Transaction implements TransactionModel {
     }
 
     senderOutput.amount = senderOutput.amount - amount;
-    const spent: TransactionOutputModel = {
+    const spent: ITransactionOutput = {
       address: recipient,
       amount,
     };

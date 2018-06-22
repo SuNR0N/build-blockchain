@@ -2,11 +2,19 @@ import {
   DIFFICULTY,
   MINE_RATE,
 } from '../config';
-import { BlockModel } from '../interfaces/BlockModel';
+import { IBlock } from '../interfaces/Block';
 import { ChainUtils } from '../utils/ChainUtils';
 
-export class Block<T> implements BlockModel<T> {
-  public static blockHash<T>(block: Block<T>): string {
+export class Block<T> implements IBlock<T> {
+  public static adjustDifficulty<T>(lastBlock: IBlock<T>, currentTimestamp: number): number {
+    const { timestamp: previousTimestamp } = lastBlock;
+    let { difficulty } = lastBlock;
+    difficulty = previousTimestamp + MINE_RATE > currentTimestamp ? difficulty + 1 : difficulty - 1;
+
+    return difficulty;
+  }
+
+  public static blockHash<T>(block: IBlock<T>): string {
     const {
       data,
       difficulty,
@@ -17,7 +25,7 @@ export class Block<T> implements BlockModel<T> {
     return Block.hash<T>(timestamp, lastHash, data!, nonce, difficulty);
   }
 
-  public static genesis<T>(): Block<T> {
+  public static genesis<T>(): IBlock<T> {
     return new this<T>(
       Date.now(),
       '0'.repeat(10),
@@ -32,7 +40,7 @@ export class Block<T> implements BlockModel<T> {
     return ChainUtils.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
   }
 
-  public static mineBlock<T>(lastBlock: Block<T>, data: T): Block<T> {
+  public static mineBlock<T>(lastBlock: IBlock<T>, data: T): IBlock<T> {
     const { hash: lastHash } = lastBlock;
     let { difficulty } = lastBlock;
     let hash: string;
@@ -47,14 +55,6 @@ export class Block<T> implements BlockModel<T> {
     } while (!hash.startsWith('0'.repeat(difficulty)));
 
     return new this<T>(timestamp, lastHash, hash, data, nonce, difficulty);
-  }
-
-  public static adjustDifficulty<T>(lastBlock: Block<T>, currentTimestamp: number): number {
-    const { timestamp: previousTimestamp } = lastBlock;
-    let { difficulty } = lastBlock;
-    difficulty = previousTimestamp + MINE_RATE > currentTimestamp ? difficulty + 1 : difficulty - 1;
-
-    return difficulty;
   }
 
   constructor(
