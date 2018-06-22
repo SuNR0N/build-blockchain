@@ -13,6 +13,27 @@ describe('TransactionPool', () => {
     });
   });
 
+  describe('existingTransaction', () => {
+    let transaction: Transaction;
+    let transactionPool: TransactionPool;
+    let wallet: Wallet;
+
+    beforeEach(() => {
+      transactionPool = new TransactionPool();
+      wallet = new Wallet();
+      transaction = Transaction.newTransaction(wallet, 'r3c1p13n7', 123)!;
+      transactionPool.updateOrAddTransaction(transaction);
+    });
+
+    it('should return the transaction if one exists with the provided address', () => {
+      expect(transactionPool.existingTransaction(wallet.publicKey)).toBe(transaction);
+    });
+
+    it('should return undefined if no transaction exists with the provided address', () => {
+      expect(transactionPool.existingTransaction('4ddr355')).toBeUndefined();
+    });
+  });
+
   describe('updateOrAddTransaction', () => {
     let transaction: Transaction;
     let transactionPool: TransactionPool;
