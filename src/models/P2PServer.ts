@@ -1,7 +1,16 @@
 import WebSocket from 'ws';
 
-import { P2PServerModel } from '../interfaces/P2PServerModel';
-import { Blockchain } from './Blockchain';
+import {
+  CHAIN,
+  Message,
+  P2PServerModel,
+  TRANSACTION,
+  TransactionModel,
+} from '../interfaces';
+import {
+  Blockchain,
+  TransactionPool,
+} from './';
 
 const WS_PORT = process.env.WS_PORT ? parseInt(process.env.WS_PORT, 10) : 5001;
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
@@ -10,7 +19,8 @@ export class P2PServer implements P2PServerModel {
   private sockets: WebSocket[];
 
   constructor(
-    public blockchain: Blockchain<string>,
+    private blockchain: Blockchain<string>,
+    private transactionPool: TransactionPool,
   ) {
     this.sockets = [];
   }
@@ -27,19 +37,46 @@ export class P2PServer implements P2PServerModel {
     console.log(`Listening for peer-to-peer connections on: ${WS_PORT}`);
   }
 
+  public broadcastTransaction(transaction: TransactionModel): void {
+    this.sockets.forEach((socket) => this.sendTransaction(socket, transaction));
+  }
+
   public synchronizeChains(): void {
     this.sockets.forEach((socket) => this.sendChain(socket));
   }
 
   private sendChain(socket: WebSocket): void {
-    socket.send(JSON.stringify(this.blockchain.chain));
+    const message: Message = {
+      data: this.blockchain.chain,
+      type: CHAIN,
+    };
+    socket.send(JSON.stringify(message));
+  }
+
+  private sendTransaction(socket: WebSocket, transaction: TransactionModel): void {
+    const message: Message = {
+      data: transaction,
+      type: TRANSACTION,
+    };
+    socket.send(JSON.stringify(message));
   }
 
   private messageHandler(socket: WebSocket): void {
     socket.on('message', (message: string) => {
-      const data = JSON.parse(message);
+      const msg: Message = JSON.parse(message);
 
-      this.blockchain.replaceChain(data);
+      switch (msg.type) {
+        case CHAIN:
+          this.blockchain.replaceChain(msg.data);
+          break;
+        case TRANSACTION:
+          this.transactionPool.updateOrAddTransaction(msg.data);
+          break;
+        default:
+          // tslint:disable-next-line:no-console
+          console.log(`Unknown message type: ${(msg as any).type}`);
+          break;
+      }
     });
   }
 

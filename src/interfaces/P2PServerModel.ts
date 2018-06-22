@@ -1,8 +1,7 @@
-import { Blockchain } from '../models/Blockchain';
+import { TransactionModel } from './TransactionModel';
 
 export interface P2PServerModel {
-  blockchain: Blockchain<string>;
-
+  broadcastTransaction(transaction: TransactionModel): void;
   listen(): void;
   synchronizeChains(): void;
 }
