@@ -1,3 +1,4 @@
+import { logger } from '../utils/Logger';
 import {
   Transaction,
   TransactionPool,
@@ -100,10 +101,10 @@ describe('TransactionPool', () => {
       });
 
       it('should log a message', () => {
-        const logSpy = jest.spyOn(console, 'log');
+        const warnSpy = jest.spyOn(logger, 'warn');
         transactionPool.validTransactions();
 
-        expect(logSpy).toHaveBeenCalledWith(
+        expect(warnSpy).toHaveBeenCalledWith(
           expect.stringMatching(/^Invalid transaction \([a-z0-9-]{36}\) from [a-z0-9]{130}\.$/),
         );
       });
@@ -126,10 +127,10 @@ describe('TransactionPool', () => {
       });
 
       it('should log a message', () => {
-        const logSpy = jest.spyOn(console, 'log');
+        const warnSpy = jest.spyOn(logger, 'warn');
         transactionPool.validTransactions();
 
-        expect(logSpy).toHaveBeenCalledWith(
+        expect(warnSpy).toHaveBeenCalledWith(
           expect.stringMatching(/^Invalid signature for transaction \([a-z0-9-]{36}\) from [a-z0-9]{130}\.$/),
         );
       });

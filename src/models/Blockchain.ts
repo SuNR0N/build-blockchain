@@ -3,6 +3,7 @@ import {
   IBlockchain,
   ITransaction,
 } from '../interfaces';
+import { logger } from '../utils/Logger';
 import { Block } from './Block';
 
 export class Blockchain<T = ITransaction[]> implements IBlockchain<T> {
@@ -55,17 +56,15 @@ export class Blockchain<T = ITransaction[]> implements IBlockchain<T> {
   }
 
   public replaceChain(chain: Array<IBlock<T>>): void {
-    // tslint:disable:no-console
     if (chain.length <= this.chain.length) {
-      console.log('Received chain is not longer than the current chain.');
+      logger.info('Received chain is not longer than the current chain.');
       return;
     } else if (!this.isValidChain(chain)) {
-      console.log('Received chain is not valid.');
+      logger.warn('Received chain is not valid.');
       return;
     }
 
-    console.log('Replacing blockchain with the new chain.');
+    logger.info('Replacing blockchain with the new chain.');
     this.chain = chain;
-    // tslint:enable:no-console
   }
 }

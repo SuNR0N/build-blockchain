@@ -12,6 +12,7 @@ import {
   TransactionPool,
   Wallet,
 } from './models';
+import { logger } from './utils/Logger';
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -23,19 +24,29 @@ const transactionPool = new TransactionPool();
 const p2pServer = new P2PServer(blockchain, transactionPool);
 const miner = new Miner(blockchain, transactionPool, wallet, p2pServer);
 
+app.get('/addresses', (req, res) => {
+  // TODO
+});
+
+app.get('/balance', (req, res) => {
+  const balance: Partial<IWallet> = {
+    balance: wallet.calculateBalance(blockchain),
+  };
+  res.json(balance);
+});
+
 app.get('/blocks', (req, res) => {
   res.json(blockchain.chain);
 });
 
 app.post('/mine', (req, res) => {
   const block = miner.mine();
-  // tslint:disable-next-line:no-console
-  console.log(`New block added: ${block.toString()}`);
+  logger.info(`New block added: ${block.toString()}`);
 
   res.redirect('/blocks');
 });
 
-app.get('/public-key', (req, res) => {
+app.get('/my-address', (req, res) => {
   const publicKey: Partial<IWallet> = {
     publicKey: wallet.publicKey,
   };
@@ -60,7 +71,6 @@ app.post('/transactions', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  // tslint:disable-next-line:no-console
-  console.log(`Blockchain application is listening on: http://localhost:${PORT}`);
+  logger.info(`Blockchain application is listening on: http://localhost:${PORT}`);
 });
 p2pServer.listen();

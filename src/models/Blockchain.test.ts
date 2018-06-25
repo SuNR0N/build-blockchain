@@ -1,3 +1,4 @@
+import { logger } from '../utils/Logger';
 import {
   Block,
   Blockchain,
@@ -118,10 +119,12 @@ describe('Blockchain', () => {
   });
 
   describe('replaceChain', () => {
-    let logSpy: jest.SpyInstance;
+    let infoSpy: jest.SpyInstance;
+    let warnSpy: jest.SpyInstance;
 
     beforeEach(() => {
-      logSpy = jest.spyOn(console, 'log');
+      infoSpy = jest.spyOn(logger, 'info');
+      warnSpy = jest.spyOn(logger, 'warn');
     });
 
     afterEach(() => {
@@ -135,7 +138,7 @@ describe('Blockchain', () => {
 
       blockchain.replaceChain(otherBlockchain.chain);
 
-      expect(logSpy).toHaveBeenCalledWith('Received chain is not longer than the current chain.');
+      expect(infoSpy).toHaveBeenCalledWith('Received chain is not longer than the current chain.');
       expect(blockchain.chain).not.toEqual(otherBlockchain.chain);
     });
 
@@ -147,7 +150,7 @@ describe('Blockchain', () => {
 
       blockchain.replaceChain(otherBlockchain.chain);
 
-      expect(logSpy).toHaveBeenCalledWith('Received chain is not longer than the current chain.');
+      expect(infoSpy).toHaveBeenCalledWith('Received chain is not longer than the current chain.');
       expect(blockchain.chain).not.toEqual(otherBlockchain.chain);
     });
 
@@ -161,7 +164,7 @@ describe('Blockchain', () => {
 
       blockchain.replaceChain(otherBlockchain.chain);
 
-      expect(logSpy).toHaveBeenCalledWith('Received chain is not valid.');
+      expect(warnSpy).toHaveBeenCalledWith('Received chain is not valid.');
       expect(blockchain.chain).not.toEqual(otherBlockchain.chain);
     });
 
@@ -172,7 +175,7 @@ describe('Blockchain', () => {
 
       blockchain.replaceChain(otherBlockchain.chain);
 
-      expect(logSpy).toHaveBeenCalledWith('Replacing blockchain with the new chain.');
+      expect(infoSpy).toHaveBeenCalledWith('Replacing blockchain with the new chain.');
       expect(blockchain.chain).toEqual(otherBlockchain.chain);
     });
   });

@@ -11,7 +11,10 @@ import {
   ITransactionPool,
   IWallet,
 } from '../interfaces';
-import { ChainUtils } from '../utils/ChainUtils';
+import {
+  ChainUtils,
+  logger,
+} from '../utils';
 import { Transaction } from './Transaction';
 
 export class Wallet implements IWallet {
@@ -76,8 +79,7 @@ export class Wallet implements IWallet {
     this.balance = this.calculateBalance(blockchain);
 
     if (amount > this.balance) {
-      // tslint:disable-next-line:no-console
-      console.log(`Transferable amount (${amount}) exceeds current balance (${this.balance}).`);
+      logger.warn(`Transferable amount (${amount}) exceeds current balance (${this.balance}).`);
       return;
     }
 

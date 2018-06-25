@@ -2,6 +2,7 @@ import {
   ITransaction,
   ITransactionPool,
 } from '../interfaces';
+import { logger } from '../utils/Logger';
 import { Transaction } from './Transaction';
 
 export class TransactionPool implements ITransactionPool {
@@ -38,14 +39,12 @@ export class TransactionPool implements ITransactionPool {
       }, 0);
 
       if (transaction.input!.amount !== outputTotal) {
-        // tslint:disable-next-line:no-console
-        console.log(`Invalid transaction (${transaction.id}) from ${transaction.input!.address}.`);
+        logger.warn(`Invalid transaction (${transaction.id}) from ${transaction.input!.address}.`);
         return false;
       }
 
       if (!Transaction.verifyTransaction(transaction)) {
-        // tslint:disable-next-line:no-console
-        console.log(`Invalid signature for transaction (${transaction.id}) from ${transaction.input!.address}.`);
+        logger.warn(`Invalid signature for transaction (${transaction.id}) from ${transaction.input!.address}.`);
         return false;
       }
 

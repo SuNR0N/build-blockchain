@@ -84,3 +84,11 @@ With coverage report:
 ```sh
 yarn test:coverage
 ```
+
+## TODO
+
+- [ ] Reach 100% code coverage
+- [ ] Implement endpoint which returns the address book
+- [ ] Implement transaction fees
+- [ ] Set up docker compose for the p2p nodes
+- [ ] Reduce the runtime of unit tests

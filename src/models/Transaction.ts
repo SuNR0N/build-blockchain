@@ -5,13 +5,15 @@ import {
   ITransactionOutput,
   IWallet,
 } from '../interfaces';
-import { ChainUtils } from '../utils/ChainUtils';
+import {
+  ChainUtils,
+  logger,
+} from '../utils';
 
 export class Transaction implements ITransaction {
   public static newTransaction(senderWallet: IWallet, recipient: string, amount: number): ITransaction | undefined {
     if (amount > senderWallet.balance) {
-      // tslint:disable-next-line:no-console
-      console.log(`Transferable amount (${amount}) exceeds sender's balance.`);
+      logger.warn(`Transferable amount (${amount}) exceeds sender's balance.`);
       return;
     }
 
@@ -74,8 +76,7 @@ export class Transaction implements ITransaction {
     const senderOutput = this.outputs.find((output) => output.address === senderWallet.publicKey)!;
 
     if (amount > senderOutput.amount) {
-      // tslint:disable-next-line:no-console
-      console.log(`Transferable amount (${amount}) exceeds sender's balance.`);
+      logger.warn(`Transferable amount (${amount}) exceeds sender's balance.`);
       return;
     }
 

@@ -2,6 +2,7 @@ import { Signature } from 'elliptic';
 
 import { ITransactionOutput } from '../interfaces/Transaction';
 import { ChainUtils } from '../utils/ChainUtils';
+import { logger } from '../utils/Logger';
 import {
   Transaction,
   Wallet,
@@ -18,11 +19,11 @@ describe('Transaction', () => {
 
     describe('transacting with an amount that exceeds the balance', () => {
       const amount = 1000;
-      let logSpy: jest.SpyInstance;
+      let warnSpy: jest.SpyInstance;
       let transaction: Transaction | undefined;
 
       beforeEach(() => {
-        logSpy = jest.spyOn(console, 'log');
+        warnSpy = jest.spyOn(logger, 'warn');
         transaction = Transaction.newTransaction(wallet, recipient, amount);
       });
 
@@ -31,7 +32,7 @@ describe('Transaction', () => {
       });
 
       it('should log a message', () => {
-        expect(logSpy).toHaveBeenCalledWith("Transferable amount (1000) exceeds sender's balance.");
+        expect(warnSpy).toHaveBeenCalledWith("Transferable amount (1000) exceeds sender's balance.");
       });
     });
 
@@ -205,12 +206,12 @@ describe('Transaction', () => {
 
   describe('update', () => {
     it('should log a message and return undefined if the new amount exceeds the balance', () => {
-      const logSpy = jest.spyOn(console, 'log');
+      const warnSpy = jest.spyOn(logger, 'warn');
       const wallet = new Wallet();
       let transaction = Transaction.newTransaction(wallet, 'foo', 450)!;
       transaction = transaction.update(wallet, 'bar', 100)!;
 
-      expect(logSpy).toHaveBeenCalledWith("Transferable amount (100) exceeds sender's balance.");
+      expect(warnSpy).toHaveBeenCalledWith("Transferable amount (100) exceeds sender's balance.");
       expect(transaction).toBeUndefined();
     });
 

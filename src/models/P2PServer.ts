@@ -10,6 +10,7 @@ import {
   Message,
   TRANSACTION,
 } from '../interfaces';
+import { logger } from '../utils/Logger';
 
 const WS_PORT = process.env.WS_PORT ? parseInt(process.env.WS_PORT, 10) : 5001;
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
@@ -37,11 +38,9 @@ export class P2PServer implements IP2PServer {
     server.on('connection', (socket: WebSocket) => {
       this.connectSocket(socket);
     });
-
     this.connectToPeers();
 
-    // tslint:disable-next-line:no-console
-    console.log(`Listening for peer-to-peer connections on: ${WS_PORT}`);
+    logger.info(`Listening for peer-to-peer connections on: ${WS_PORT}`);
   }
 
   public synchronizeChains(): void {
@@ -50,8 +49,7 @@ export class P2PServer implements IP2PServer {
 
   private connectSocket(socket: WebSocket): void {
     this.sockets.push(socket);
-    // tslint:disable-next-line:no-console
-    console.log('Socket connected');
+    logger.info('Socket connected');
 
     this.messageHandler(socket);
 
@@ -81,8 +79,7 @@ export class P2PServer implements IP2PServer {
           this.transactionPool.updateOrAddTransaction(msg.data);
           break;
         default:
-          // tslint:disable-next-line:no-console
-          console.log(`Unknown message type: ${(msg as any).type}`);
+          logger.error(`Unknown message type: ${(msg as any).type}`);
           break;
       }
     });

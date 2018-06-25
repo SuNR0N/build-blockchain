@@ -2,11 +2,22 @@
   "name": "build-blockchain",
   "version": "1.0.0",
   "description": "Build a Blockchain and a Cryptocurrency from Scratch",
+  "keywords": [
+    "blockchain",
+    "cryptocurrency",
+    "express",
+    "jest",
+    "swagger",
+    "typescript",
+    "websocket",
+    "winston"
+  ],
   "dependencies": {
     "crypto-js": "^3.1.9-1",
     "elliptic": "^6.4.0",
     "express": "^4.16.3",
     "uuid": "^3.2.1",
+    "winston": "^3.0.0",
     "ws": "^5.2.0"
   },
   "devDependencies": {

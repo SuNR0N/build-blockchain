@@ -1,4 +1,5 @@
 import { INITIAL_BALANCE } from '../config';
+import { logger } from '../utils/Logger';
 import {
   Blockchain,
   TransactionPool,
@@ -83,11 +84,11 @@ describe('Wallet', () => {
     });
 
     it('should log a message if the provided amount exceeds the current balance', () => {
-      const logSpy = jest.spyOn(console, 'log');
+      const warnSpy = jest.spyOn(logger, 'warn');
 
       wallet.createTransaction(recipient, 1000, blockchain, transactionPool);
 
-      expect(logSpy).toHaveBeenCalledWith('Transferable amount (1000) exceeds current balance (500).');
+      expect(warnSpy).toHaveBeenCalledWith('Transferable amount (1000) exceeds current balance (500).');
     });
 
     it('should add a new transaction to the pool if it does not exist', () => {
