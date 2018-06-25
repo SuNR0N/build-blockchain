@@ -1,3 +1,8 @@
+import {
+  IBlock,
+  ITransaction,
+} from './';
+
 export interface IMiner {
-  mine(): void;
+  mine(): IBlock<ITransaction[]>;
 }

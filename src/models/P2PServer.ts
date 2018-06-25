@@ -2,6 +2,7 @@ import WebSocket from 'ws';
 
 import {
   CHAIN,
+  CLEAR_TRANSACTIONS,
   IBlockchain,
   IP2PServer,
   ITransaction,
@@ -21,6 +22,10 @@ export class P2PServer implements IP2PServer {
     private transactionPool: ITransactionPool,
   ) {
     this.sockets = [];
+  }
+
+  public broadcastClearTransactions(): void {
+    this.sockets.forEach((socket) => this.sendClearTransactions(socket));
   }
 
   public broadcastTransaction(transaction: ITransaction): void {
@@ -69,6 +74,9 @@ export class P2PServer implements IP2PServer {
         case CHAIN:
           this.blockchain.replaceChain(msg.data);
           break;
+        case CLEAR_TRANSACTIONS:
+          this.transactionPool.clear();
+          break;
         case TRANSACTION:
           this.transactionPool.updateOrAddTransaction(msg.data);
           break;
@@ -84,6 +92,13 @@ export class P2PServer implements IP2PServer {
     const message: Message = {
       data: this.blockchain.chain,
       type: CHAIN,
+    };
+    socket.send(JSON.stringify(message));
+  }
+
+  private sendClearTransactions(socket: WebSocket): void {
+    const message: Message = {
+      type: CLEAR_TRANSACTIONS,
     };
     socket.send(JSON.stringify(message));
   }

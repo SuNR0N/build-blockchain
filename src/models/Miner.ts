@@ -1,24 +1,33 @@
 import {
+  IBlock,
   IBlockchain,
   IMiner,
   IP2PServer,
+  ITransaction,
   ITransactionPool,
   IWallet,
 } from '../interfaces';
+import {
+  Transaction,
+  Wallet,
+} from './';
 
 export class Miner implements IMiner {
   constructor(
-    private blokckchain: IBlockchain<string>,
+    private blokckchain: IBlockchain<ITransaction[]>,
     private transactionPool: ITransactionPool,
     private wallet: IWallet,
     private p2pServer: IP2PServer,
   ) { }
 
-  public mine(): void {
+  public mine(): IBlock<ITransaction[]> {
     const validTransactions = this.transactionPool.validTransactions();
-    // create a block consisting of the valid transactions
-    // synchronize the chains in the peer-to-peer server
-    // clear the transaction pool
-    // broadcast to every miner to clear their transaction pools
+    validTransactions.push(Transaction.rewardTransaction(this.wallet, Wallet.blockchainWallet()));
+    const block = this.blokckchain.addBlock(validTransactions);
+    this.p2pServer.synchronizeChains();
+    this.transactionPool.clear();
+    this.p2pServer.broadcastClearTransactions();
+
+    return block;
   }
 }

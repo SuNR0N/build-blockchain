@@ -13,6 +13,22 @@ describe('TransactionPool', () => {
     });
   });
 
+  describe('clear', () => {
+    let transactionPool: TransactionPool;
+
+    beforeEach(() => {
+      transactionPool = new TransactionPool();
+      const transaction = Transaction.newTransaction(new Wallet(), 'r3c1p13n7', 123)!;
+      transactionPool.updateOrAddTransaction(transaction);
+    });
+
+    it('should clear the list of transactions', () => {
+      transactionPool.clear();
+
+      expect(transactionPool.transactions).toHaveLength(0);
+    });
+  });
+
   describe('existingTransaction', () => {
     let transaction: Transaction;
     let transactionPool: TransactionPool;

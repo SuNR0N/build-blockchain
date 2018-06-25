@@ -11,6 +11,10 @@ export class TransactionPool implements ITransactionPool {
     this.transactions = [];
   }
 
+  public clear(): void {
+    this.transactions = [];
+  }
+
   public existingTransaction(address: string): ITransaction | undefined {
     return this.transactions.find((transaction) => transaction.input!.address === address);
   }
