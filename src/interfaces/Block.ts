@@ -1,4 +1,6 @@
-export interface IBlock<T> {
+import { ITransaction } from './Transaction';
+
+export interface IBlock<T = ITransaction[]> {
   data: T | null;
   difficulty: number;
   hash: string;

@@ -1,6 +1,9 @@
-import { IBlock } from './Block';
+import {
+  IBlock,
+  ITransaction,
+} from './';
 
-export interface IBlockchain<T> {
+export interface IBlockchain<T = ITransaction[]> {
   chain: Array<IBlock<T>>;
 
   addBlock(data: T): IBlock<T>;
