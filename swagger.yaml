@@ -1,0 +1,206 @@
+swagger: "2.0"
+info:
+  description: "Build a Blockchain and a Cryptocurrency from Scratch"
+  version: "1.0.0"
+  title: "Build Blockchain API"
+  contact:
+    email: "annus.norbert@gmail.com"
+  license:
+    name: "MIT"
+host: "localhost:3000"
+basePath: "/"
+tags:
+- name: "blockchain"
+  description: "Everything about your blockchain"
+schemes:
+- "http"
+paths:
+  /addresses:
+    get:
+      tags:
+      - "blockchain"
+      summary: "Get addresses"
+      description: "Returns the public addresses of all the available miners in the network"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/IAddress"
+  /balance:
+    get:
+      tags:
+      - "blockchain"
+      summary: "Get own balance"
+      description: "Returns the balance of the current miner"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/IBalance"
+  /blocks:
+    get:
+      tags:
+      - "blockchain"
+      summary: "Get blocks"
+      description: "Returns the blocks of the blockchain"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/IBlock"          
+  /mine:
+    post:
+      tags:
+      - "blockchain"
+      summary: "Mine block"
+      description: "Mines a new block and returns the updated blocks of the blockchain"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/IBlock"
+  /my-address:
+    get:
+      tags:
+      - "blockchain"
+      summary: "Get own address"
+      description: "Returns the public address of the current miner"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/IAddress"
+  /transactions:
+    get:
+      tags:
+      - "blockchain"
+      summary: "Get transactions"
+      description: "Returns all unconfirmed transactions in the transaction pool"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ITransaction"
+    post:
+      tags:
+      - "blockchain"
+      summary: "Create a transaction"
+      description: "Creates a new unconfirmed transaction in the transaction pool"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          schema:
+            $ref: "#/definitions/ITransactionOutput"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ITransaction"
+definitions:
+  IAddress:
+    type: "object"
+    properties:
+      publicKey:
+        type: "string"
+        example: "04784fc09eeccb57d3aaba308be258f2088bcbc7294a2f5763b3bf6fe5c064eca4bd8f2f815dcf6baefaf715c812ddfd10c2cdbcbaef6204c98d0e52b8d725e06a"
+  IBalance:
+    type: "object"
+    properties:
+      balance:
+        type: "number"
+        example: 500
+  IBlock:
+    type: "object"
+    properties:
+      data:
+        type: "array"
+        items:
+          $ref: "#/definitions/ITransaction"
+      difficulty:
+        type: "number"
+        example: 2
+      hash:
+        type: "string"
+        example: "00afaa213301a5b7ffdb7b81d006f00f75ab9bb082459c5e61dde164b840400b"
+      lastHash:
+        type: "string"
+        example: "f1r57-h45h"
+      nonce:
+        type: "number"
+        example: 259
+      timestamp:
+        type: "number"
+        example: 1529922123710
+  ISignature:
+    type: "object"
+    properties:
+      r:
+        type: "string"
+        example: "33b9ecacbca902035d026daa3c83de5f2154add6e0859577beca206da4cc684b"
+      s:
+        type: "string"
+        example: "965fecae8b21716372c7b4569db3dbb0111465a2d127f19f666e505a0cd60100"
+      recoveryParam:
+        type: "number"
+        example: 1
+  ITransaction:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "9aabeec0-7861-11e8-a574-6f8940d2a77c"
+      input:
+        $ref: "#/definitions/ITransactionInput"
+      outputs:
+        type: "array"
+        items:
+          $ref: "#/definitions/ITransactionOutput"
+  ITransactionInput:
+    type: "object"
+    properties:
+      address:
+        type: "string"
+        example: "04ab8bb1bf708d72656c290357a4812276afb5c74684625f34aca71d61dbe45b66aeef2c1cc52dd0ee2ef29fa7288d85a20768974dd879b25cb3761977724dc7f7"
+      amount:
+        type: "number"
+        example: 500
+      signature:
+        $ref: "#/definitions/ISignature"
+      timestamp:
+        type: "number"
+        example: 1529922123699
+  ITransactionOutput:
+    type: "object"
+    properties:
+      address:
+        type: "string"
+        example: "04784fc09eeccb57d3aaba308be258f2088bcbc7294a2f5763b3bf6fe5c064eca4bd8f2f815dcf6baefaf715c812ddfd10c2cdbcbaef6204c98d0e52b8d725e06a"
+      amount:
+        type: "number"
+        example: 100
