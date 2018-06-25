@@ -51,7 +51,7 @@ app.post('/transactions', (req, res) => {
     address,
     amount,
   } = req.body;
-  const transaction = wallet.createTransaction(address, amount, transactionPool);
+  const transaction = wallet.createTransaction(address, amount, blockchain, transactionPool);
   if (transaction) {
     p2pServer.broadcastTransaction(transaction);
   }

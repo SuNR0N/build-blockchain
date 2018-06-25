@@ -5,7 +5,9 @@ import {
 
 import { INITIAL_BALANCE } from '../config';
 import {
+  IBlockchain,
   ITransaction,
+  ITransactionOutput,
   ITransactionPool,
   IWallet,
 } from '../interfaces';
@@ -30,8 +32,49 @@ export class Wallet implements IWallet {
     this.publicKey = this.keyPair.getPublic('hex');
   }
 
+  public calculateBalance(blockchain: IBlockchain<ITransaction[]>): number {
+    const transactions: ITransaction[] = [];
+    blockchain.chain.forEach((block) => {
+      if (Array.isArray(block.data)) {
+        block.data.forEach((transaction) => transactions.push(transaction));
+      }
+    });
+    let balance = this.balance;
+
+    const inputTransactions = transactions.filter((transaction) => transaction.input!.address === this.publicKey);
+    let startTime = 0;
+    if (inputTransactions.length > 0) {
+      const recentInputTransaction = inputTransactions.reduce((previous, current) => {
+        return previous.input!.timestamp > current.input!.timestamp ? previous : current;
+      }, inputTransactions[0]);
+      const recentOutput = recentInputTransaction.outputs.find((output) => output.address === this.publicKey);
+      if (recentOutput) {
+        balance = recentOutput.amount;
+      }
+      startTime = recentInputTransaction.input!.timestamp;
+    }
+
+    const income: number = transactions
+      .filter((transaction) => transaction.input!.timestamp > startTime)
+      .reduce((previous, current) => {
+        previous = previous.concat(current.outputs);
+        return previous;
+      }, new Array<ITransactionOutput>())
+      .filter((output) => output.address === this.publicKey)
+      .reduce((previous, current) => {
+        previous += current.amount;
+        return previous;
+      }, 0);
+
+    balance += income;
+
+    return balance;
+  }
+
   // tslint:disable-next-line:max-line-length
-  public createTransaction(recipient: string, amount: number, transactionPool: ITransactionPool): ITransaction | undefined {
+  public createTransaction(recipient: string, amount: number, blockchain: IBlockchain, transactionPool: ITransactionPool): ITransaction | undefined {
+    this.balance = this.calculateBalance(blockchain);
+
     if (amount > this.balance) {
       // tslint:disable-next-line:no-console
       console.log(`Transferable amount (${amount}) exceeds current balance (${this.balance}).`);

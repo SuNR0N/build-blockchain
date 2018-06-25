@@ -4,6 +4,7 @@ import {
 } from 'elliptic';
 
 import {
+  IBlockchain,
   ITransaction,
   ITransactionPool,
 } from './';
@@ -13,7 +14,9 @@ export interface IWallet {
   keyPair: KeyPair;
   publicKey: string;
 
-  createTransaction(recipient: string, amount: number, transactionPool: ITransactionPool): ITransaction | undefined;
+  calculateBalance(blockchain: IBlockchain<ITransaction[]>): number;
+  // tslint:disable-next-line:max-line-length
+  createTransaction(recipient: string, amount: number, blockchain: IBlockchain, transactionPool: ITransactionPool): ITransaction | undefined;
   sign(dataHash: string): Signature;
   toString(): string;
 }

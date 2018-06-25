@@ -3,6 +3,7 @@ import {
   TransactionPool,
   Wallet,
 } from './';
+import { Blockchain } from './Blockchain';
 
 describe('Wallet', () => {
   describe('constructor', () => {
@@ -63,24 +64,26 @@ describe('Wallet', () => {
   describe('createTransaction', () => {
     const amount = 150;
     const recipient = 'r3c1p13n7';
+    let blockchain: Blockchain;
     let transactionPool: TransactionPool;
     let wallet: Wallet;
 
     beforeEach(() => {
-      wallet = new Wallet();
+      blockchain = new Blockchain();
       transactionPool = new TransactionPool();
+      wallet = new Wallet();
     });
 
     it('should log a message if the provided amount exceeds the current balance', () => {
       const logSpy = jest.spyOn(console, 'log');
 
-      wallet.createTransaction(recipient, 1000, transactionPool);
+      wallet.createTransaction(recipient, 1000, blockchain, transactionPool);
 
       expect(logSpy).toHaveBeenCalledWith('Transferable amount (1000) exceeds current balance (500).');
     });
 
     it('should add a new transaction to the pool if it does not exist', () => {
-      wallet.createTransaction(recipient, amount, transactionPool);
+      wallet.createTransaction(recipient, amount, blockchain, transactionPool);
       const existingTransaction = transactionPool.transactions[0];
 
       expect(transactionPool.transactions).toHaveLength(1);
@@ -97,8 +100,8 @@ describe('Wallet', () => {
     });
 
     it('should update the transaction with the new details if it exists in the pool', () => {
-      wallet.createTransaction(recipient, amount, transactionPool);
-      wallet.createTransaction(recipient, amount, transactionPool);
+      wallet.createTransaction(recipient, amount, blockchain, transactionPool);
+      wallet.createTransaction(recipient, amount, blockchain, transactionPool);
       const existingTransaction = transactionPool.transactions[0];
 
       expect(transactionPool.transactions).toHaveLength(1);

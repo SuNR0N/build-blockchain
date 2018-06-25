@@ -1,10 +1,11 @@
 import {
   IBlock,
   IBlockchain,
+  ITransaction,
 } from '../interfaces';
 import { Block } from './Block';
 
-export class Blockchain<T> implements IBlockchain<T> {
+export class Blockchain<T = ITransaction[]> implements IBlockchain<T> {
   public chain: Array<IBlock<T>>;
 
   constructor() {

@@ -2,10 +2,13 @@ import {
   DIFFICULTY,
   MINE_RATE,
 } from '../config';
-import { IBlock } from '../interfaces/Block';
+import {
+  IBlock,
+  ITransaction,
+} from '../interfaces';
 import { ChainUtils } from '../utils/ChainUtils';
 
-export class Block<T> implements IBlock<T> {
+export class Block<T = ITransaction[]> implements IBlock<T> {
   public static adjustDifficulty<T>(lastBlock: IBlock<T>, currentTimestamp: number): number {
     const { timestamp: previousTimestamp } = lastBlock;
     let { difficulty } = lastBlock;
