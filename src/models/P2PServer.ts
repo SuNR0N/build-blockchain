@@ -18,7 +18,7 @@ export class P2PServer implements IP2PServer {
   private sockets: WebSocket[];
 
   constructor(
-    private blockchain: IBlockchain<string>,
+    private blockchain: IBlockchain<ITransaction[]>,
     private transactionPool: ITransactionPool,
   ) {
     this.sockets = [];

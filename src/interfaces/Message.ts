@@ -10,7 +10,7 @@ export const TRANSACTION = 'TRANSACTION';
 interface IMessageType {
   CHAIN: {
     type: typeof CHAIN;
-    data: Array<IBlock<string>>;
+    data: Array<IBlock<ITransaction[]>>;
   };
   CLEAR_TRANSACTIONS: {
     type: typeof CLEAR_TRANSACTIONS;

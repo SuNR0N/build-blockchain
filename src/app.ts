@@ -1,9 +1,13 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 
-import { IWallet } from './interfaces';
+import {
+  ITransaction,
+  IWallet,
+} from './interfaces';
 import {
   Blockchain,
+  Miner,
   P2PServer,
   TransactionPool,
   Wallet,
@@ -13,21 +17,20 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(bodyParser.json());
 
-const blockchain = new Blockchain<string>();
+const blockchain = new Blockchain<ITransaction[]>();
 const wallet = new Wallet();
 const transactionPool = new TransactionPool();
 const p2pServer = new P2PServer(blockchain, transactionPool);
+const miner = new Miner(blockchain, transactionPool, wallet, p2pServer);
 
 app.get('/blocks', (req, res) => {
   res.json(blockchain.chain);
 });
 
 app.post('/mine', (req, res) => {
-  const newBlock = blockchain.addBlock(req.body.data);
+  const block = miner.mine();
   // tslint:disable-next-line:no-console
-  console.log(`New block added: ${newBlock.toString()}`);
-
-  p2pServer.synchronizeChains();
+  console.log(`New block added: ${block.toString()}`);
 
   res.redirect('/blocks');
 });

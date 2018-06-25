@@ -5,6 +5,7 @@ import {
 
 import { INITIAL_BALANCE } from '../config';
 import {
+  ITransaction,
   ITransactionPool,
   IWallet,
 } from '../interfaces';
@@ -29,7 +30,8 @@ export class Wallet implements IWallet {
     this.publicKey = this.keyPair.getPublic('hex');
   }
 
-  public createTransaction(recipient: string, amount: number, transactionPool: ITransactionPool): void {
+  // tslint:disable-next-line:max-line-length
+  public createTransaction(recipient: string, amount: number, transactionPool: ITransactionPool): ITransaction | undefined {
     if (amount > this.balance) {
       // tslint:disable-next-line:no-console
       console.log(`Transferable amount (${amount}) exceeds current balance (${this.balance}).`);
@@ -44,6 +46,8 @@ export class Wallet implements IWallet {
       transaction = Transaction.newTransaction(this, recipient, amount)!;
       transactionPool.updateOrAddTransaction(transaction);
     }
+
+    return transaction;
   }
 
   public sign(dataHash: string): Signature {
