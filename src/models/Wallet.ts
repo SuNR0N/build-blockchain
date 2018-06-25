@@ -12,6 +12,13 @@ import { ChainUtils } from '../utils/ChainUtils';
 import { Transaction } from './Transaction';
 
 export class Wallet implements IWallet {
+  public static blockchainWallet(): IWallet {
+    const blockchainWallet = new this();
+    blockchainWallet.publicKey = 'blockchain-wallet';
+
+    return blockchainWallet;
+  }
+
   public balance: number;
   public keyPair: KeyPair;
   public publicKey: string;

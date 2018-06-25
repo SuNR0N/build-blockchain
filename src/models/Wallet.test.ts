@@ -118,4 +118,12 @@ describe('Wallet', () => {
       ]);
     });
   });
+
+  describe('blockchainWallet', () => {
+    it('should create a wallet with an identifiable address', () => {
+      const wallet = Wallet.blockchainWallet();
+
+      expect(wallet.publicKey).toBe('blockchain-wallet');
+    });
+  });
 });

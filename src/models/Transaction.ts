@@ -1,3 +1,4 @@
+import { MINING_REWARD } from '../config';
 import {
   ITransaction,
   ITransactionInput,
@@ -8,8 +9,6 @@ import { ChainUtils } from '../utils/ChainUtils';
 
 export class Transaction implements ITransaction {
   public static newTransaction(senderWallet: IWallet, recipient: string, amount: number): ITransaction | undefined {
-    const transaction = new this();
-
     if (amount > senderWallet.balance) {
       // tslint:disable-next-line:no-console
       console.log(`Transferable amount (${amount}) exceeds sender's balance.`);
@@ -25,10 +24,15 @@ export class Transaction implements ITransaction {
       amount,
     };
 
-    transaction.outputs.push(remaining, spent);
-    Transaction.signTransaction(transaction, senderWallet);
+    return Transaction.transactionWithOutputs(senderWallet, remaining, spent);
+  }
 
-    return transaction;
+  public static rewardTransaction(minerWallet: IWallet, blockchainWallet: IWallet): ITransaction {
+    const reward: ITransactionOutput = {
+      address: minerWallet.publicKey,
+      amount: MINING_REWARD,
+    };
+    return Transaction.transactionWithOutputs(blockchainWallet, reward);
   }
 
   public static signTransaction(transaction: ITransaction, senderWallet: IWallet): void {
@@ -38,6 +42,14 @@ export class Transaction implements ITransaction {
       signature: senderWallet.sign(ChainUtils.hash(transaction.outputs)),
       timestamp: Date.now(),
     };
+  }
+
+  public static transactionWithOutputs(senderWallet: IWallet, ...outputs: ITransactionOutput[]): ITransaction {
+    const transaction = new this();
+    transaction.outputs.push(...outputs);
+    Transaction.signTransaction(transaction, senderWallet);
+
+    return transaction;
   }
 
   public static verifyTransaction(transaction: ITransaction): boolean {

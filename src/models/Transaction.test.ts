@@ -1,5 +1,6 @@
 import { Signature } from 'elliptic';
 
+import { ITransactionOutput } from '../interfaces/Transaction';
 import { ChainUtils } from '../utils/ChainUtils';
 import {
   Transaction,
@@ -36,30 +37,71 @@ describe('Transaction', () => {
 
     describe('transacting with an amount that does not exceed the balance', () => {
       const amount = 50;
-      let signTransactionSpy: jest.SpyInstance;
-      let transaction: Transaction;
+      let transactionWithOutputsSpy: jest.SpyInstance;
 
       beforeEach(() => {
-        signTransactionSpy = jest.spyOn(Transaction, 'signTransaction');
-        transaction = Transaction.newTransaction(wallet, recipient, amount)!;
+        transactionWithOutputsSpy = jest.spyOn(Transaction, 'transactionWithOutputs');
+        Transaction.newTransaction(wallet, recipient, amount);
       });
 
-      it('should contain an output on the spent amount', () => {
-        expect(transaction.outputs).toContainEqual(expect.objectContaining({
-          address: recipient,
-          amount,
-        }));
+      afterEach(() => {
+        transactionWithOutputsSpy.mockClear();
       });
 
-      it('should contain an output on the updated balance', () => {
-        expect(transaction.outputs).toContainEqual(expect.objectContaining({
+      it('should call the transactionWithOutputs function with the wallet as its first argument', () => {
+        const senderWallet = transactionWithOutputsSpy.mock.calls[0][0];
+
+        expect(senderWallet).toEqual(wallet);
+      });
+
+      it('should call the transactionWithOutputs function with the remaining amount as its second argument', () => {
+        const remaining = transactionWithOutputsSpy.mock.calls[0][1];
+
+        expect(remaining).toEqual({
           address: wallet.publicKey,
           amount: 450,
-        }));
+        });
       });
 
-      it('should sign the transaction', () => {
-        expect(signTransactionSpy).toHaveBeenCalledWith(transaction, wallet);
+      it('should call the transactionWithOutputs function with the spent amount as its third argument', () => {
+        const spent = transactionWithOutputsSpy.mock.calls[0][2];
+
+        expect(spent).toEqual({
+          address: recipient,
+          amount,
+        });
+      });
+    });
+  });
+
+  describe('rewardTransaction', () => {
+    let blockchainWallet: Wallet;
+    let minerWallet: Wallet;
+    let transactionWithOutputsSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      blockchainWallet = Wallet.blockchainWallet();
+      minerWallet = new Wallet();
+      transactionWithOutputsSpy = jest.spyOn(Transaction, 'transactionWithOutputs');
+      Transaction.rewardTransaction(minerWallet, blockchainWallet);
+    });
+
+    afterEach(() => {
+      transactionWithOutputsSpy.mockClear();
+    });
+
+    it('should call the transactionWithOutputs function with the blockchain wallet as its first argument', () => {
+      const bcWallet = transactionWithOutputsSpy.mock.calls[0][0];
+
+      expect(bcWallet).toEqual(blockchainWallet);
+    });
+
+    it('should call the transactionWithOutputs function with the reward as its second argument', () => {
+      const reward = transactionWithOutputsSpy.mock.calls[0][1];
+
+      expect(reward).toEqual({
+        address: minerWallet.publicKey,
+        amount: 50,
       });
     });
   });
@@ -95,6 +137,36 @@ describe('Transaction', () => {
 
     it('should set the timestamp field of input to the current timestamp', () => {
       expect(transaction.input!.timestamp).toBe(mockTimestamp);
+    });
+  });
+
+  describe('transactionWithOutputs', () => {
+    const output1: ITransactionOutput = {
+      address: 'foo',
+      amount: 100,
+    };
+    const output2: ITransactionOutput = {
+      address: 'bar',
+      amount: 200,
+    };
+    let signTransactionSpy: jest.SpyInstance;
+    let transaction: Transaction;
+    let wallet: Wallet;
+
+    beforeEach(() => {
+      wallet = new Wallet();
+      signTransactionSpy = jest.spyOn(Transaction, 'signTransaction');
+      transaction = Transaction.transactionWithOutputs(wallet, output1, output2);
+    });
+
+    it('should add the provided outputs to the new transaction', () => {
+      expect(transaction.outputs).toHaveLength(2);
+      expect(transaction.outputs).toContain(output1);
+      expect(transaction.outputs).toContain(output2);
+    });
+
+    it('should call the signTransaction function with the transaction and the wallet of the sender', () => {
+      expect(signTransactionSpy).toHaveBeenCalledWith(transaction, wallet);
     });
   });
 
