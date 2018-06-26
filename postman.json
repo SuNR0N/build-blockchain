@@ -1,0 +1,199 @@
+{
+	"info": {
+		"_postman_id": "fa8ed21e-648a-4909-a6ce-5d22567ff5ab",
+		"name": "Build Blockchain API",
+		"description": "Build a Blockchain and a Cryptocurrency from Scratch",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get addresses",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:3001/addresses",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"addresses"
+					]
+				},
+				"description": "Returns the public addresses of all the available miners in the network"
+			},
+			"response": []
+		},
+		{
+			"name": "Get own balance",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:3001/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"balance"
+					]
+				},
+				"description": "Returns the balance of the current miner"
+			},
+			"response": []
+		},
+		{
+			"name": "Get blocks",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:3001/blocks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"blocks"
+					]
+				},
+				"description": "Returns the blocks of the blockchain"
+			},
+			"response": []
+		},
+		{
+			"name": "Mine block",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:3001/mine",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"mine"
+					]
+				},
+				"description": "Mines a new block and returns the updated blocks of the blockchain"
+			},
+			"response": []
+		},
+		{
+			"name": "Get own address",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:3001/my-address",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"my-address"
+					]
+				},
+				"description": "Returns the public address of the current miner"
+			},
+			"response": []
+		},
+		{
+			"name": "Get transactions",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:3001/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"transactions"
+					]
+				},
+				"description": "Returns all unconfirmed transactions in the transaction pool"
+			},
+			"response": []
+		},
+		{
+			"name": "Create a transaction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:3001/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"transactions"
+					]
+				},
+				"description": "Creates a new unconfirmed transaction in the transaction pool"
+			},
+			"response": []
+		}
+	]
+}

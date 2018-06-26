@@ -58,6 +58,33 @@ app.get('/transactions', (req, res) => {
 });
 
 app.post('/transactions', (req, res) => {
+  const properties = new Map<string, string>([
+    ['address', 'string'],
+    ['amount', 'number'],
+  ]);
+  const entries = Object.entries(req.body);
+  const requiredProperties = Array.from(properties.keys());
+  const receivedProperties = entries.map(([key]) => key);
+  if (!requiredProperties.every((property) => receivedProperties.includes(property))) {
+    res
+      .status(400)
+      .json({ message: `One ore more required property (${requiredProperties.join(', ')}) is missing.` });
+    return;
+  }
+  for (const [key, value] of entries) {
+    const propertyType = properties.get(key);
+    if (!propertyType) {
+      res
+        .status(400)
+        .json({ message: `Property '${key}' is invalid.` });
+      return;
+    } else if (typeof value !== propertyType) {
+      res
+        .status(400)
+        .json({ message: `Property '${key}' expects a ${propertyType} but got a ${typeof value}.` });
+      return;
+    }
+  }
   const {
     address,
     amount,

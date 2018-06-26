@@ -7,7 +7,7 @@ info:
     email: "annus.norbert@gmail.com"
   license:
     name: "MIT"
-host: "localhost:3000"
+host: "localhost:3001"
 basePath: "/"
 tags:
 - name: "blockchain"
@@ -25,7 +25,7 @@ paths:
       - "application/json"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful Operation"
           schema:
             type: "array"
             items:
@@ -40,7 +40,7 @@ paths:
       - "application/json"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful Operation"
           schema:
             $ref: "#/definitions/IBalance"
   /blocks:
@@ -53,7 +53,7 @@ paths:
       - "application/json"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful Operation"
           schema:
             type: "array"
             items:
@@ -68,7 +68,7 @@ paths:
       - "application/json"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful Operation"
           schema:
             type: "array"
             items:
@@ -83,7 +83,7 @@ paths:
       - "application/json"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful Operation"
           schema:
             $ref: "#/definitions/IAddress"
   /transactions:
@@ -96,7 +96,7 @@ paths:
       - "application/json"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful Operation"
           schema:
             type: "array"
             items:
@@ -117,11 +117,15 @@ paths:
             $ref: "#/definitions/ITransactionOutput"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful Operation"
           schema:
             type: "array"
             items:
               $ref: "#/definitions/ITransaction"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/IError"
 definitions:
   IAddress:
     type: "object"
@@ -157,6 +161,12 @@ definitions:
       timestamp:
         type: "number"
         example: 1529922123710
+  IError:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        example: "An unknown error occurred."
   ISignature:
     type: "object"
     properties:
