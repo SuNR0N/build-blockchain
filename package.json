@@ -35,7 +35,7 @@
   "scripts": {
     "start": "ts-node src/app.ts",
     "test": "DIFFICULTY=1 MINE_RATE=100 jest --watchAll",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "DIFFICULTY=1 MINE_RATE=100 jest --coverage"
   },
   "author": "annus.norbert@gmail.com",
   "license": "MIT",

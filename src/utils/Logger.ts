@@ -29,7 +29,7 @@ if (process.env.NODE_ENV !== 'production') {
         format: 'YYYY-MM-DD HH:mm:ss',
       }),
       format.printf((log) => {
-        return `${log.timestamp} ${log.level}: ${log.message} ${log.meta ? JSON.stringify(log.meta) : ''}`;
+        return `${log.timestamp} ${log.level}: ${log.message}`;
       }),
     ),
   }));

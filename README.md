@@ -2,7 +2,31 @@
 
 [Build a Blockchain and a Cryptocurrency from Scratch](https://www.udemy.com/build-blockchain/)
 
+Table of Contents
+
+* [Terminology](#terminology)
+    * [Bitcoin](#bitcoin)
+    * [Blockchain](#blockchain)
+    * [Cryptocurrency](#cryptocurrency)
+    * [Digital Signature](#digital-signature)
+    * [Genesis Block](#genesis-block)
+    * [Mining](#mining)
+    * [Proof of Work System](#proof-of-work-system)
+    * [Transaction](#transaction)
+    * [Transaction Pool](#transaction-pool)
+    * [Wallet](#wallet)
+* [Install](#install)
+* [Run](#run)
+    * [Environment Variables](#environment-variables)
+* [Test](#test)
+* [Debug](#debug)
+* [TODO](#todo)
+
 ## Terminology
+
+### Bitcoin
+
+The first decentralized cryptocurrency in _2009_ developed by _Satoshi Nakamoto_.
 
 ### Blockchain
 
@@ -12,21 +36,19 @@ The blockchain is a _distributed_ and _decentralized ledger_ that _stores data_ 
 
 A cryptocurrency is a _digital medium of exchange_ which leverages the blockchain and uses cryptography to generate digital signatures.
 
-### Wallet
+### Digital Signature
 
-Object that stores the _balance_ of an individual alongside with a _private_ and _public key pair_. The _private key_ is used to generate digital signatures, while the _public key_ is used to verify signatures and it also serves as the address of the wallet.
+The digital signature is the hash value of the combination of the transactional data and the sender's private key.
 
-### Mining
-
-Temporarily _unconfirmed_ blocks of transactions can be added to the blockchain by solving a computationally expensive _proof of work_ algorithm. Once solved, the miner can add the block and the other miners will verify it. Miners are rewarded for adding a new block to the chain.
-
-### Bitcoin
-
-The first decentralized cryptocurrency in _2009_ developed by _Satoshi Nakamoto_.
+The public key of the sender can be used to verify the signature.
 
 ### Genesis Block
 
 Hardcoded block which serves as the origin of the blockchain.
+
+### Mining
+
+Temporarily _unconfirmed_ blocks of transactions can be added to the blockchain by solving a computationally expensive _proof of work_ algorithm. Once solved, the miner can add the block and the other miners will verify it. Miners are rewarded for adding a new block to the chain.
 
 ### Proof of Work System
 
@@ -42,11 +64,9 @@ An object which captures the information behind the exchange of currency between
 
 An object that contains all new and therefore _unconfirmed transactions_ submitted by individuals.
 
-### Digital Signature
+### Wallet
 
-The digital signature is the hash value of the combination of the transactional data and the sender's private key.
-
-The public key of the sender can be used to verify the signature.
+Object that stores the _balance_ of an individual alongside with a _private_ and _public key pair_. The _private key_ is used to generate digital signatures, while the _public key_ is used to verify signatures and it also serves as the address of the wallet.
 
 ## Install
 
@@ -102,6 +122,54 @@ With coverage report:
 
 ```sh
 yarn test:coverage
+```
+
+## Debug
+
+If you're using _VS Code_ then you can set up your debug _configurations_ within your _launch.json_ file based on the following code snippet to be able to easily debug a particular TypeScript / Jest file or the whole application:
+
+```json
+{
+    "name": "Current TS File",
+    "type": "node",
+    "request": "launch",
+    "args": [
+        "${relativeFile}"
+    ],
+    "runtimeArgs": [
+        "-r",
+        "ts-node/register"
+    ],
+    "cwd": "${workspaceRoot}",
+    "protocol": "inspector",
+    "internalConsoleOptions": "openOnSessionStart"
+},
+{
+    "name": "Current Jest Test",
+    "type": "node",
+    "request": "launch",
+    "program": "${workspaceFolder}/node_modules/.bin/jest",
+    "args": [
+        "${relativeFile}"
+    ],
+    "console": "integratedTerminal",
+    "internalConsoleOptions": "neverOpen"
+},
+{
+    "name": "Application",
+    "type": "node",
+    "request": "launch",
+    "args": [
+        "src/app.ts"
+    ],
+    "runtimeArgs": [
+        "-r",
+        "ts-node/register"
+    ],
+    "cwd": "${workspaceRoot}",
+    "protocol": "inspector",
+    "internalConsoleOptions": "openOnSessionStart"
+}
 ```
 
 ## TODO
