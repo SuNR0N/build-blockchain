@@ -2,12 +2,13 @@ import {
   IBlock,
   IBlockchain,
   IMiner,
-  IP2PServer,
   ITransaction,
   ITransactionPool,
   IWallet,
 } from '../interfaces';
 import {
+  P2PServer,
+  SYNC_ADDRESS_EVENT,
   Transaction,
   Wallet,
 } from './';
@@ -17,8 +18,10 @@ export class Miner implements IMiner {
     private blokckchain: IBlockchain<ITransaction[]>,
     private transactionPool: ITransactionPool,
     private wallet: IWallet,
-    private p2pServer: IP2PServer,
-  ) { }
+    private p2pServer: P2PServer,
+  ) {
+    this.p2pServer.on(SYNC_ADDRESS_EVENT, () => this.syncAddressHandler());
+  }
 
   public mine(): IBlock<ITransaction[]> {
     const validTransactions = this.transactionPool.validTransactions();
@@ -29,5 +32,9 @@ export class Miner implements IMiner {
     this.p2pServer.broadcastClearTransactions();
 
     return block;
+  }
+
+  private syncAddressHandler(): void {
+    this.p2pServer.broadcastAddress(this.wallet.publicKey);
   }
 }

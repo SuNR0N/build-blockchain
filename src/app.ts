@@ -2,8 +2,10 @@ import bodyParser from 'body-parser';
 import express from 'express';
 
 import {
+  IAddress,
+  IBalance,
+  IError,
   ITransaction,
-  IWallet,
 } from './interfaces';
 import {
   Blockchain,
@@ -25,11 +27,13 @@ const p2pServer = new P2PServer(blockchain, transactionPool);
 const miner = new Miner(blockchain, transactionPool, wallet, p2pServer);
 
 app.get('/addresses', (req, res) => {
-  // TODO
+  const addresses: IAddress[] = Array.from(p2pServer.addresses.values())
+    .map((address) => ({ publicKey: address }));
+  res.json(addresses);
 });
 
 app.get('/balance', (req, res) => {
-  const balance: Partial<IWallet> = {
+  const balance: IBalance = {
     balance: wallet.calculateBalance(blockchain),
   };
   res.json(balance);
@@ -47,7 +51,7 @@ app.post('/mine', (req, res) => {
 });
 
 app.get('/my-address', (req, res) => {
-  const publicKey: Partial<IWallet> = {
+  const publicKey: IAddress = {
     publicKey: wallet.publicKey,
   };
   res.json(publicKey);
@@ -66,22 +70,31 @@ app.post('/transactions', (req, res) => {
   const requiredProperties = Array.from(properties.keys());
   const receivedProperties = entries.map(([key]) => key);
   if (!requiredProperties.every((property) => receivedProperties.includes(property))) {
+    const errorMessage: IError = {
+      message: `One ore more required property (${requiredProperties.join(', ')}) is missing.`,
+    };
     res
       .status(400)
-      .json({ message: `One ore more required property (${requiredProperties.join(', ')}) is missing.` });
+      .json(errorMessage);
     return;
   }
   for (const [key, value] of entries) {
     const propertyType = properties.get(key);
     if (!propertyType) {
+      const errorMessage: IError = {
+        message: `Property '${key}' is invalid.`,
+      };
       res
         .status(400)
-        .json({ message: `Property '${key}' is invalid.` });
+        .json(errorMessage);
       return;
     } else if (typeof value !== propertyType) {
+      const errorMessage: IError = {
+        message: `Property '${key}' expects a ${propertyType} but got a ${typeof value}.`,
+      };
       res
         .status(400)
-        .json({ message: `Property '${key}' expects a ${propertyType} but got a ${typeof value}.` });
+        .json(errorMessage);
       return;
     }
   }
