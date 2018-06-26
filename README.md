@@ -73,6 +73,25 @@ PORT=3002 WS_PORT=5002 PEERS=ws://localhost:5001 yarn start
 PORT=3003 WS_PORT=5003 PEERS=ws://localhost:5001,ws://localhost:5002 yarn start
 ```
 
+### Environment Variables
+
+```sh
+# The HTTP port on which the Express server will listen
+PORT=3001
+
+# The WebSocket port on which the P2P server will listen
+WS_PORT=5001
+
+# The comma separated list of WebSocket addresses to which the P2P server will join on start
+PEERS=
+
+# The initial diffculty of the proof-of-work algorithm which sets how many prefixing zeros the block hash must have  
+DIFFICULTY=
+
+# The average amount of time (ms) required to successfully mine a new block
+MINE_RATE=
+```
+
 ## Test
 
 ```sh
@@ -91,4 +110,4 @@ yarn test:coverage
 - [X] Implement endpoint which returns the address book
 - [ ] Implement transaction fees
 - [ ] Set up docker compose for the p2p nodes
-- [ ] Reduce the runtime of unit tests
+- [X] Reduce the runtime of unit tests

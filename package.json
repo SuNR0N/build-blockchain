@@ -34,7 +34,7 @@
   },
   "scripts": {
     "start": "ts-node src/app.ts",
-    "test": "jest --watchAll",
+    "test": "DIFFICULTY=1 MINE_RATE=100 jest --watchAll",
     "test:coverage": "jest --coverage"
   },
   "author": "annus.norbert@gmail.com",
