@@ -5,6 +5,7 @@ import {
 } from '../interfaces';
 import {
   Blockchain,
+  CONNECTED_EVENT,
   Miner,
   P2PServer,
   TransactionPool,
@@ -25,11 +26,11 @@ describe('Miner', () => {
       miner = new Miner(blockchain, transactionPool, wallet, p2pServer);
     });
 
-    it('should add an event listener to the sync address event', () => {
+    it('should add an event listener for the connected event', () => {
       const [event, handler] = onSpy.mock.calls[0];
 
-      expect(event).toBe('syncaddress');
-      expect(handler()).toBe(miner.syncAddressHandler());
+      expect(event).toBe(CONNECTED_EVENT);
+      expect(handler()).toBe(miner.connectedHandler());
     });
   });
 
@@ -86,7 +87,7 @@ describe('Miner', () => {
     });
   });
 
-  describe('syncAddressHandler', () => {
+  describe('connectedHandler', () => {
     let broadcastAddressSpy: jest.SpyInstance;
     let miner: any;
     let wallet: Wallet;
@@ -102,7 +103,7 @@ describe('Miner', () => {
     });
 
     it('should call the broadcastAddress function with the publicKey of the wallet', () => {
-      miner.syncAddressHandler();
+      miner.connectedHandler();
 
       expect(broadcastAddressSpy).toHaveBeenCalledWith(wallet.publicKey);
     });

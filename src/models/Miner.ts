@@ -7,8 +7,8 @@ import {
   IWallet,
 } from '../interfaces';
 import {
+  CONNECTED_EVENT,
   P2PServer,
-  SYNC_ADDRESS_EVENT,
   Transaction,
   Wallet,
 } from './';
@@ -20,7 +20,7 @@ export class Miner implements IMiner {
     private wallet: IWallet,
     private p2pServer: P2PServer,
   ) {
-    this.p2pServer.on(SYNC_ADDRESS_EVENT, () => this.syncAddressHandler());
+    this.p2pServer.on(CONNECTED_EVENT, () => this.connectedHandler());
   }
 
   public mine(): IBlock<ITransaction[]> {
@@ -34,7 +34,7 @@ export class Miner implements IMiner {
     return block;
   }
 
-  private syncAddressHandler(): void {
+  private connectedHandler(): void {
     this.p2pServer.broadcastAddress(this.wallet.publicKey);
   }
 }

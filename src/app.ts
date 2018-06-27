@@ -27,7 +27,7 @@ const p2pServer = new P2PServer(blockchain, transactionPool);
 const miner = new Miner(blockchain, transactionPool, wallet, p2pServer);
 
 app.get('/addresses', (req, res) => {
-  const addresses: IAddress[] = Array.from(p2pServer.addresses.values())
+  const addresses: IAddress[] = p2pServer.addresses
     .map((address) => ({ publicKey: address }));
   res.json(addresses);
 });

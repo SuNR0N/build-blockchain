@@ -14,38 +14,36 @@ import {
 } from '../interfaces';
 import { logger } from '../utils/Logger';
 
-export const SYNC_ADDRESS_EVENT = 'syncaddress';
+export const CONNECTED_EVENT = 'connected';
 const WS_PORT = process.env.WS_PORT ? parseInt(process.env.WS_PORT, 10) : 5001;
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 
 export class P2PServer extends EventEmitter implements IP2PServer {
-  // tslint:disable-next-line:variable-name
-  private _addresses: Set<string>;
-  private sockets: WebSocket[];
+  private sockets: Map<WebSocket, string | null>;
 
   constructor(
     private blockchain: IBlockchain<ITransaction[]>,
     private transactionPool: ITransactionPool,
   ) {
     super();
-    this._addresses = new Set();
-    this.sockets = [];
+    this.sockets = new Map();
   }
 
-  public get addresses(): Set<string> {
-    return this._addresses;
+  public get addresses(): string[] {
+    return Array.from(this.sockets.values())
+      .filter((address): address is string => typeof address === 'string');
   }
 
   public broadcastAddress(address: string): void {
-    this.sockets.forEach((socket) => this.sendAddress(socket, address));
+    this.sockets.forEach((adr, socket) => this.sendAddress(socket, address));
   }
 
   public broadcastClearTransactions(): void {
-    this.sockets.forEach((socket) => this.sendClearTransactions(socket));
+    this.sockets.forEach((adr, socket) => this.sendClearTransactions(socket));
   }
 
   public broadcastTransaction(transaction: ITransaction): void {
-    this.sockets.forEach((socket) => this.sendTransaction(socket, transaction));
+    this.sockets.forEach((adr, socket) => this.sendTransaction(socket, transaction));
   }
 
   public listen(): void {
@@ -59,25 +57,22 @@ export class P2PServer extends EventEmitter implements IP2PServer {
   }
 
   public synchronizeChains(): void {
-    this.sockets.forEach((socket) => this.sendChain(socket));
+    this.sockets.forEach((adr, socket) => this.sendChain(socket));
   }
 
   private closeHandler(socket: WebSocket): void {
     socket.on('close', () => {
-      const indexToRemove = this.sockets.indexOf(socket);
-      this.sockets.splice(indexToRemove, 1);
-      this._addresses.clear();
-      this.emit(SYNC_ADDRESS_EVENT);
+      this.sockets.delete(socket);
     });
   }
 
   private connectSocket(socket: WebSocket): void {
-    this.sockets.push(socket);
+    this.sockets.set(socket, null);
     logger.info('Socket connected');
 
     this.messageHandler(socket);
     this.closeHandler(socket);
-    this.emit(SYNC_ADDRESS_EVENT);
+    this.emit(CONNECTED_EVENT);
 
     this.sendChain(socket);
   }
@@ -96,7 +91,7 @@ export class P2PServer extends EventEmitter implements IP2PServer {
 
       switch (msg.type) {
         case ADDRESS:
-          this._addresses.add(msg.data);
+          this.sockets.set(socket, msg.data);
           break;
         case CHAIN:
           this.blockchain.replaceChain(msg.data);
