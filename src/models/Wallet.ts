@@ -44,16 +44,13 @@ export class Wallet implements IWallet {
     });
     let balance = this.balance;
 
-    const inputTransactions = transactions.filter((transaction) => transaction.input!.address === this.publicKey);
+    const recentInputTransaction = transactions
+      .filter((transaction) => transaction.input!.address === this.publicKey)
+      .sort((t1, t2) => t2.input!.timestamp - t1.input!.timestamp)[0];
     let startTime = 0;
-    if (inputTransactions.length > 0) {
-      const recentInputTransaction = inputTransactions.reduce((previous, current) => {
-        return previous.input!.timestamp > current.input!.timestamp ? previous : current;
-      }, inputTransactions[0]);
-      const recentOutput = recentInputTransaction.outputs.find((output) => output.address === this.publicKey);
-      if (recentOutput) {
-        balance = recentOutput.amount;
-      }
+    if (recentInputTransaction) {
+      const recentOutput = recentInputTransaction.outputs.find((output) => output.address === this.publicKey)!;
+      balance = recentOutput.amount;
       startTime = recentInputTransaction.input!.timestamp;
     }
 

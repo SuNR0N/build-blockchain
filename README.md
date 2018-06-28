@@ -174,7 +174,7 @@ If you're using _VS Code_ then you can set up your debug _configurations_ within
 
 ## TODO
 
-- [ ] Reach 100% code coverage
+- [X] Reach 100% code coverage
 - [X] Implement endpoint which returns the address book
 - [ ] Implement transaction fees
 - [ ] Set up docker compose for the p2p nodes

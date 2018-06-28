@@ -181,17 +181,21 @@ describe('Wallet', () => {
         blockchain.addBlock(transactionPool.transactions);
       });
 
-      describe('and the sender sends an other transaction to the recipient', () => {
+      describe('and the sender sends other transactions to the recipient', () => {
+        const repeatSecond = 2;
+
         beforeEach(() => {
-          transactionPool.clear();
-          senderWallet.createTransaction(recipientWallet.publicKey, amountX, blockchain, transactionPool);
-          blockchain.addBlock(transactionPool.transactions);
+          for (let i = 0; i < repeatSecond; i++) {
+            transactionPool.clear();
+            senderWallet.createTransaction(recipientWallet.publicKey, amountX, blockchain, transactionPool);
+            blockchain.addBlock(transactionPool.transactions);
+          }
         });
 
         it('should calculate the recipient balance only using transactions since its most recent one', () => {
           const updatedRecipientBalance = recipientWallet.calculateBalance(blockchain);
 
-          expect(updatedRecipientBalance).toBe(recipientBalance - amountY + amountX);
+          expect(updatedRecipientBalance).toBe(recipientBalance - amountY + 2 * amountX);
         });
       });
     });
