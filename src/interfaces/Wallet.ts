@@ -16,7 +16,7 @@ export interface IWallet {
 
   calculateBalance(blockchain: IBlockchain<ITransaction[]>): number;
   // tslint:disable-next-line:max-line-length
-  createTransaction(recipient: string, amount: number, blockchain: IBlockchain, transactionPool: ITransactionPool): ITransaction | undefined;
+  createTransaction(recipient: string, amount: number, blockchain: IBlockchain, transactionPool: ITransactionPool): ITransaction;
   sign(dataHash: string): Signature;
   toString(): string;
 }

@@ -1,5 +1,6 @@
 export * from './Block';
 export * from './Blockchain';
+export * from './InsufficientFundsError';
 export * from './Miner';
 export * from './P2PServer';
 export * from './Transaction';

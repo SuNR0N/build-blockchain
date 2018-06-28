@@ -105,71 +105,28 @@ describe('P2PServer', () => {
   });
 
   describe('listen', () => {
-    describe('given the WS_PORT environment variable exists', () => {
-      const originalVariables = process.env;
-      let infoSpy: jest.Mock;
-      let serverSpy: jest.Mock;
+    const port = 1337;
+    const peers: string[] = [];
 
-      beforeEach(async () => {
-        jest.resetModules();
-        process.env = { ...originalVariables };
-        process.env.WS_PORT = '1337';
-        serverSpy = jest.fn(() => ({ on: jest.fn() }));
-        jest.doMock('ws', () => {
-          const ws = jest.fn(() => ({ on: jest.fn() }));
-          (ws as any).Server = serverSpy;
-          return ws;
-        });
-        infoSpy = jest.fn();
-        jest.doMock('../utils/Logger', () => ({ logger: { info: infoSpy } }));
-        const { P2PServer: P2PServerWithPort } = await import('./P2PServer');
-        const p2pServer = new P2PServerWithPort(blockchain, transactionPool);
-        p2pServer.listen();
-      });
-
-      afterEach(() => {
-        process.env = originalVariables;
-      });
-
-      it('should create a WebSocket server with a custom port', async () => {
-        expect(serverSpy).toHaveBeenCalledWith({ port: 1337 });
-      });
-
-      it('should log a message on the port of the WebSocket server', () => {
-        expect(infoSpy).toHaveBeenCalledWith('Listening for peer-to-peer connections on: 1337');
-      });
+    beforeEach(() => {
+      jest.clearAllMocks();
     });
 
-    describe('given the WS_PORT environment variable does not exist', () => {
-      const originalVariables = process.env;
-      let p2pServer: P2PServer;
+    it('should create a WebSocket server with the provided port', async () => {
+      const p2pServer = new P2PServer(blockchain, transactionPool);
+      const serverSpy = jest.spyOn(WebSocket, 'Server')
+        .mockImplementation(() => ({ on: jest.fn() }));
+      p2pServer.listen(port, []);
 
-      beforeEach(() => {
-        jest.resetModules();
-        process.env = { ...originalVariables };
-        delete process.env.WS_PORT;
-        p2pServer = new P2PServer(blockchain, transactionPool);
-      });
+      expect(serverSpy).toHaveBeenCalledWith({ port });
+    });
 
-      afterEach(() => {
-        process.env = originalVariables;
-        jest.clearAllMocks();
-      });
+    it('should log a message on the port of the WebSocket server', () => {
+      const p2pServer = new P2PServer(blockchain, transactionPool);
+      const infoSpy = jest.spyOn(logger, 'info');
+      p2pServer.listen(port, []);
 
-      it('should create a WebSocket server with the default port', () => {
-        const serverSpy = jest.spyOn(WebSocket, 'Server')
-          .mockImplementation(() => ({ on: jest.fn() }));
-        p2pServer.listen();
-
-        expect(serverSpy).toHaveBeenCalledWith({ port: 5001 });
-      });
-
-      it('should log a message on the port of the WebSocket server', () => {
-        const infoSpy = jest.spyOn(logger, 'info');
-        p2pServer.listen();
-
-        expect(infoSpy).toHaveBeenCalledWith('Listening for peer-to-peer connections on: 5001');
-      });
+      expect(infoSpy).toHaveBeenCalledWith('Listening for peer-to-peer connections on: 1337');
     });
 
     it('should add an event listener for the connection event', () => {
@@ -178,7 +135,7 @@ describe('P2PServer', () => {
       jest.spyOn(WebSocket, 'Server')
         .mockImplementation(() => ({ on: onSpy }));
       const connectSocketSpy = jest.spyOn(p2pServer as any, 'connectSocket');
-      p2pServer.listen();
+      p2pServer.listen(port, peers);
 
       const [event, handler] = onSpy.mock.calls[0];
       handler(mockSocket1);
@@ -187,12 +144,12 @@ describe('P2PServer', () => {
       expect(connectSocketSpy).toHaveBeenCalledWith(mockSocket1);
     });
 
-    it('should call the connectToPeers function', () => {
+    it('should call the connectToPeers function with the provided peers', () => {
       const p2pServer = new P2PServer(blockchain, transactionPool);
       const connectToPeersSpy = jest.spyOn(p2pServer as any, 'connectToPeers');
-      p2pServer.listen();
+      p2pServer.listen(port, peers);
 
-      expect(connectToPeersSpy).toHaveBeenCalled();
+      expect(connectToPeersSpy).toHaveBeenCalledWith(peers);
     });
   });
 
@@ -277,58 +234,30 @@ describe('P2PServer', () => {
   });
 
   describe('connectToPeers', () => {
-    const originalVariables = process.env;
+    const peers: string[] = [
+      'ws://localhost:5001',
+      'ws://localhost:5002',
+    ];
 
     beforeEach(() => {
       jest.resetModules();
-      process.env = { ...originalVariables };
       jest.clearAllMocks();
     });
 
-    afterEach(() => {
-      process.env = originalVariables;
-    });
-
-    it('should not have any peers if the PEERS environment variable is not defined', async () => {
-      delete process.env.PEERS;
-      const WebSocketSpy = jest.fn(() => ({ on: jest.fn() }));
-      jest.doMock('ws', () => WebSocketSpy);
-      const p2pServer: any = new P2PServer(blockchain, transactionPool);
-
-      p2pServer.connectToPeers();
-
-      expect(WebSocketSpy).not.toHaveBeenCalled();
-    });
-
-    it('should have a single peer if the PEERS environment variable contains an address', async () => {
-      process.env.PEERS = 'ws://localhost:5001';
-      const WebSocketSpy = jest.fn(() => ({ on: jest.fn() }));
-      jest.doMock('ws', () => WebSocketSpy);
-      const { P2PServer: P2PServerWithPeer } = await import('./P2PServer');
-      const p2pServer: any = new P2PServerWithPeer(blockchain, transactionPool);
-
-      p2pServer.connectToPeers();
-
-      expect(WebSocketSpy).toHaveBeenCalledTimes(1);
-      expect(WebSocketSpy).toHaveBeenNthCalledWith(1, 'ws://localhost:5001');
-    });
-
-    it('should have multiple peers if the PEERS environment variable contains more addresses', async () => {
-      process.env.PEERS = 'ws://localhost:5001,ws://localhost:5002';
+    it('should create a WebSocket for each provided peer address', async () => {
       const WebSocketSpy = jest.fn(() => ({ on: jest.fn() }));
       jest.doMock('ws', () => WebSocketSpy);
       const { P2PServer: P2PServerWithPeers } = await import('./P2PServer');
       const p2pServer: any = new P2PServerWithPeers(blockchain, transactionPool);
 
-      p2pServer.connectToPeers();
+      p2pServer.connectToPeers(peers);
 
       expect(WebSocketSpy).toHaveBeenCalledTimes(2);
-      expect(WebSocketSpy).toHaveBeenNthCalledWith(1, 'ws://localhost:5001');
-      expect(WebSocketSpy).toHaveBeenNthCalledWith(2, 'ws://localhost:5002');
+      expect(WebSocketSpy).toHaveBeenNthCalledWith(1, peers[0]);
+      expect(WebSocketSpy).toHaveBeenNthCalledWith(2, peers[1]);
     });
 
     it('should add an event listener for the open event for each defined WebSocket peer', async () => {
-      process.env.PEERS = 'ws://localhost:5001,ws://localhost:5002';
       const on1Spy = jest.fn();
       const on2Spy = jest.fn();
       const socket1 = {
@@ -347,7 +276,7 @@ describe('P2PServer', () => {
       const p2pServer: any = new P2PServerWithPeers(blockchain, transactionPool);
       const connectSocketSpy = jest.spyOn(p2pServer, 'connectSocket');
 
-      p2pServer.connectToPeers();
+      p2pServer.connectToPeers(peers);
 
       const [event1, handler1] = on1Spy.mock.calls[0];
       const [event2, handler2] = on2Spy.mock.calls[0];

@@ -15,8 +15,6 @@ import {
 import { logger } from '../utils/Logger';
 
 export const CONNECTED_EVENT = 'connected';
-const WS_PORT = process.env.WS_PORT ? parseInt(process.env.WS_PORT, 10) : 5001;
-const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 
 export class P2PServer extends EventEmitter implements IP2PServer {
   private sockets: Map<WebSocket, string | null>;
@@ -46,14 +44,14 @@ export class P2PServer extends EventEmitter implements IP2PServer {
     this.sockets.forEach((adr, socket) => this.sendTransaction(socket, transaction));
   }
 
-  public listen(): void {
-    const server = new WebSocket.Server({ port: WS_PORT });
+  public listen(port: number, peers: string[]): void {
+    const server = new WebSocket.Server({ port });
     server.on('connection', (socket: WebSocket) => {
       this.connectSocket(socket);
     });
-    this.connectToPeers();
+    this.connectToPeers(peers);
 
-    logger.info(`Listening for peer-to-peer connections on: ${WS_PORT}`);
+    logger.info(`Listening for peer-to-peer connections on: ${port}`);
   }
 
   public synchronizeChains(): void {
@@ -77,7 +75,7 @@ export class P2PServer extends EventEmitter implements IP2PServer {
     this.sendChain(socket);
   }
 
-  private connectToPeers(): void {
+  private connectToPeers(peers: string[]): void {
     peers.forEach((peer) => {
       const socket = new WebSocket(peer);
 

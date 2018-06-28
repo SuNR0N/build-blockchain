@@ -11,11 +11,11 @@ import {
   ITransactionPool,
   IWallet,
 } from '../interfaces';
+import { ChainUtils } from '../utils/ChainUtils';
 import {
-  ChainUtils,
-  logger,
-} from '../utils';
-import { Transaction } from './Transaction';
+  InsufficientFundsError,
+  Transaction,
+} from './';
 
 export class Wallet implements IWallet {
   public static blockchainWallet(): IWallet {
@@ -72,12 +72,11 @@ export class Wallet implements IWallet {
   }
 
   // tslint:disable-next-line:max-line-length
-  public createTransaction(recipient: string, amount: number, blockchain: IBlockchain, transactionPool: ITransactionPool): ITransaction | undefined {
+  public createTransaction(recipient: string, amount: number, blockchain: IBlockchain, transactionPool: ITransactionPool): ITransaction {
     this.balance = this.calculateBalance(blockchain);
 
     if (amount > this.balance) {
-      logger.warn(`Transferable amount (${amount}) exceeds current balance (${this.balance}).`);
-      return;
+      throw new InsufficientFundsError(`Transferable amount (${amount}) exceeds current balance (${this.balance}).`);
     }
 
     let transaction = transactionPool.existingTransaction(this.publicKey);

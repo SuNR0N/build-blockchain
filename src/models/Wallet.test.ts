@@ -1,7 +1,7 @@
 import { INITIAL_BALANCE } from '../config';
-import { logger } from '../utils/Logger';
 import {
   Blockchain,
+  InsufficientFundsError,
   TransactionPool,
   Wallet,
 } from './';
@@ -78,17 +78,15 @@ describe('Wallet', () => {
     it('should call the calculateBalance function with the blockchain', () => {
       const calculateBalanceSpy = jest.spyOn(wallet, 'calculateBalance');
 
-      wallet.createTransaction(recipient, 1000, blockchain, transactionPool);
+      wallet.createTransaction(recipient, 100, blockchain, transactionPool);
 
       expect(calculateBalanceSpy).toHaveBeenCalledWith(blockchain);
     });
 
-    it('should log a message if the provided amount exceeds the current balance', () => {
-      const warnSpy = jest.spyOn(logger, 'warn');
-
-      wallet.createTransaction(recipient, 1000, blockchain, transactionPool);
-
-      expect(warnSpy).toHaveBeenCalledWith('Transferable amount (1000) exceeds current balance (500).');
+    it('should throw an error if the provided amount exceeds the current balance', () => {
+      expect(() => {
+        wallet.createTransaction(recipient, 1000, blockchain, transactionPool);
+      }).toThrowError(InsufficientFundsError);
     });
 
     it('should add a new transaction to the pool if it does not exist', () => {

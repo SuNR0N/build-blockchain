@@ -9,6 +9,7 @@ import {
 } from './interfaces';
 import {
   Blockchain,
+  InsufficientFundsError,
   Miner,
   P2PServer,
   TransactionPool,
@@ -16,7 +17,6 @@ import {
 } from './models';
 import { logger } from './utils/Logger';
 
-const PORT = process.env.PORT || 3001;
 const app = express();
 app.use(bodyParser.json());
 
@@ -102,15 +102,31 @@ app.post('/transactions', (req, res) => {
     address,
     amount,
   } = req.body;
-  const transaction = wallet.createTransaction(address, amount, blockchain, transactionPool);
-  if (transaction) {
+  try {
+    const transaction = wallet.createTransaction(address, amount, blockchain, transactionPool);
     p2pServer.broadcastTransaction(transaction);
+    res.redirect('/transactions');
+  } catch (err) {
+    if (err instanceof InsufficientFundsError) {
+      const message: IError = {
+        message: err.message,
+      };
+      res
+        .status(400)
+        .json(message);
+    } else {
+      const message: IError = {
+        message: 'An unknown error occurred.',
+      };
+      res
+        .status(500)
+        .json(message);
+    }
   }
-
-  res.redirect('/transactions');
 });
 
-app.listen(PORT, () => {
-  logger.info(`Blockchain application is listening on: http://localhost:${PORT}`);
-});
-p2pServer.listen();
+export {
+  app,
+  p2pServer,
+  wallet,
+};
