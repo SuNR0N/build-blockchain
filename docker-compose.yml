@@ -1,0 +1,63 @@
+version: '3'
+services:
+  node1:
+    build: .
+    ports:
+      - "3001:3001"
+    expose:
+      - "5001"
+    environment:
+      - PORT=3001
+      - WS_PORT=5001
+  node2:
+    build: .
+    ports:
+      - "3002:3002"
+    expose:
+      - "5002"
+    environment:
+      - PORT=3002
+      - WS_PORT=5002
+      - PEERS=ws://node1:5001
+    depends_on:
+      - node1
+    restart: on-failure
+  node3:
+    build: .
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - WS_PORT=5003
+      - PEERS=ws://node1:5001,ws://node2:5002
+    depends_on:
+      - node1
+      - node2
+    restart: on-failure
+  node4:
+    build: .
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - WS_PORT=5004
+      - PEERS=ws://node1:5001,ws://node2:5002,ws://node3:5003
+    depends_on:
+      - node1
+      - node2
+      - node3
+    restart: on-failure
+  node5:
+    build: .
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - WS_PORT=5005
+      - PEERS=ws://node1:5001,ws://node2:5002,ws://node3:5003,ws://node4:5004
+    depends_on:
+      - node1
+      - node2
+      - node3
+      - node4
+    restart: on-failure

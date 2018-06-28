@@ -1,0 +1,17 @@
+.dockerignore
+Dockerfile
+
+.git
+.gitignore
+
+.vscode
+
+coverage
+node_modules
+
+*.log
+
+postman.json
+README.md
+swagger.yaml
+tslint.json

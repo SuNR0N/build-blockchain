@@ -5,6 +5,7 @@
   "keywords": [
     "blockchain",
     "cryptocurrency",
+    "docker",
     "express",
     "jest",
     "swagger",
@@ -36,7 +37,7 @@
     "typescript": "^2.9.2"
   },
   "scripts": {
-    "start": "ts-node src/app.ts",
+    "start": "ts-node src/server.ts",
     "test": "DIFFICULTY=1 MINE_RATE=100 jest --watchAll",
     "test:coverage": "DIFFICULTY=1 MINE_RATE=100 jest --coverage"
   },

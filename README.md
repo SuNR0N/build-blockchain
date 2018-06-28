@@ -20,6 +20,7 @@ Table of Contents
     * [Environment Variables](#environment-variables)
 * [Test](#test)
 * [Debug](#debug)
+* [Docker](#docker)
 * [TODO](#todo)
 
 ## Terminology
@@ -172,10 +173,22 @@ If you're using _VS Code_ then you can set up your debug _configurations_ within
 }
 ```
 
+## Docker
+
+The provided _docker-compose.yml_ file spins up 5 interconnected miner nodes and exposes their public APIs on your _localhost_ on ports ranging from 3001 to 3005.
+
+```sh
+# Start peer-to-peer network
+docker-compose up
+
+# Stop peer-to-peer network
+docker-compose down
+```
+
 ## TODO
 
 - [X] Reach 100% code coverage
 - [X] Implement endpoint which returns the address book
-- [ ] Implement transaction fees
-- [ ] Set up docker compose for the p2p nodes
+- [X] Set up docker compose for the p2p nodes
 - [X] Reduce the runtime of unit tests
+- [ ] Implement transaction fees
